@@ -47,8 +47,12 @@ class TodoCLIUI(TodoInterface):
                     print(f"Todo with ID {task_id} not found.")
             elif choice in ["4", "delete"]:
                 task_id = int(input("Enter task ID to delete: ").strip())
-                self.task_manager.delete_task(task_id)
-                print(f"Todo with ID {task_id} deleted.")
+                tasks = self.task_manager.get_all_tasks()
+                if any(task.id == task_id for task in tasks):
+                    self.task_manager.delete_task(task_id)
+                    print(f"Todo with ID {task_id} deleted.")
+                else:
+                    print(f"Todo with ID {task_id} not found.")
             elif choice in ["5", "exit"]:
                 print("Exiting... Goodbye!")
                 break
