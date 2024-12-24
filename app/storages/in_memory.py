@@ -1,5 +1,5 @@
 from app.models import Todo
-from app.storages.base import TodoStorage
+from app.storages.base import TodoStorage, NewTodo
 
 class InMemoryTodoStorage(TodoStorage):
     def __init__(self):
@@ -11,8 +11,15 @@ class InMemoryTodoStorage(TodoStorage):
         self.next_id += 1
         return current_id
 
-    def add(self, todo: Todo):
+    def add(self, new_todo: NewTodo) -> Todo:
+        todo = Todo(
+            id=self.get_next_id(),
+            title=new_todo.title,
+            description=new_todo.description,
+            is_done=new_todo.is_done
+        )
         self.todos.append(todo)
+        return todo
 
     def delete(self, todo_id: int):
         self.todos = [todo for todo in self.todos if todo.id != todo_id] 

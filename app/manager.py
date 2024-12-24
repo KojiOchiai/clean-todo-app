@@ -1,19 +1,18 @@
 from app.models import Todo
-from app.storages.base import TodoStorage
+from app.storages.base import TodoStorage, NewTodo
 
 class TaskManager:
     def __init__(self, repository: TodoStorage):
         self.repository = repository
 
     def add_task(self, title: str, description: str, is_done: bool = False) -> Todo:
-        new_todo = Todo(
-            id=self.repository.get_next_id(),
+        new_todo = NewTodo(
             title=title,
             description=description,
             is_done=is_done
         )
-        self.repository.add(new_todo)
-        return new_todo
+        todo = self.repository.add(new_todo)
+        return todo
 
     def get_all_tasks(self) -> list[Todo]:
         return self.repository.get_all()

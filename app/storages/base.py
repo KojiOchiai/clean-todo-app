@@ -1,10 +1,17 @@
 from app.models import Todo
+from dataclasses import dataclass
+
+@dataclass
+class NewTodo:
+    title: str
+    description: str
+    is_done: bool = False 
 
 class TodoStorage:
     def get_next_id(self) -> int:
         raise NotImplementedError
 
-    def add(self, todo: Todo):
+    def add(self, new_todo: NewTodo) -> Todo:
         raise NotImplementedError
 
     def delete(self, todo_id: int):
@@ -20,4 +27,4 @@ class TodoStorage:
         raise NotImplementedError
 
     def update(self, todo: Todo):
-        raise NotImplementedError 
+        raise NotImplementedError
