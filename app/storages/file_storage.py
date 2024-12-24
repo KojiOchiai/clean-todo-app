@@ -18,22 +18,16 @@ class FileTodoStorage(TodoStorage):
         with open(self.file_path, 'w') as file:
             json.dump(data, file)
 
-    def get_next_id(self) -> int:
-        data = self._load_data()
-        current_id = data["next_id"]
-        data["next_id"] += 1
-        self._save_data(data)
-        return current_id
-
     def add(self, new_todo: NewTodo) -> Todo:
         data = self._load_data()
         todo = Todo(
-            id=self.get_next_id(),
+            id=data["next_id"],
             title=new_todo.title,
             description=new_todo.description,
             is_done=new_todo.is_done
         )
         data["todos"].append(todo.__dict__)
+        data["next_id"] += 1
         self._save_data(data)
         return todo
 

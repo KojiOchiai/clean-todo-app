@@ -6,19 +6,15 @@ class InMemoryTodoStorage(TodoStorage):
         self.todos = []
         self.next_id = 1
 
-    def get_next_id(self) -> int:
-        current_id = self.next_id
-        self.next_id += 1
-        return current_id
-
     def add(self, new_todo: NewTodo) -> Todo:
         todo = Todo(
-            id=self.get_next_id(),
+            id=self.next_id,
             title=new_todo.title,
             description=new_todo.description,
             is_done=new_todo.is_done
         )
         self.todos.append(todo)
+        self.next_id += 1
         return todo
 
     def delete(self, todo_id: int):

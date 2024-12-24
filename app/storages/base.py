@@ -8,9 +8,6 @@ class NewTodo:
     is_done: bool = False 
 
 class TodoStorage:
-    def get_next_id(self) -> int:
-        raise NotImplementedError
-
     def add(self, new_todo: NewTodo) -> Todo:
         raise NotImplementedError
 
