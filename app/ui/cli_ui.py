@@ -16,36 +16,41 @@ class TodoCLIUI(TodoInterface):
             )
 
         while True:
-            print("\nOptions:")
-            print("1. Add Todo (or type 'add')")
-            print("2. List Todos (or type 'list')")
-            print("3. Update Todo Status (or type 'update')")
-            print("4. Delete Todo (or type 'delete')")
-            print("5. Exit (or type 'exit')")
+            print("\nCommands:")
+            print("add - Add a new Todo")
+            print("list - List all Todos")
+            print("update - Update a Todo")
+            print("delete - Delete a Todo")
+            print("exit - Exit the application")
 
-            choice = input("Choose an option: ").strip().lower()
-            if choice in ["1", "add"]:
+            command = input("Enter a command: ").strip().lower()
+
+            if command == "add":
                 title = input("Enter title: ").strip()
                 description = input("Enter description: ").strip()
                 is_done_input = input("Is it done? (yes/no, default is no): ").strip().lower()
                 is_done = is_done_input == "yes" if is_done_input else False
                 self.task_manager.add_task(title, description, is_done)
-            elif choice in ["2", "list"]:
+            elif command == "list":
                 tasks = self.task_manager.get_all_tasks()
                 print("\nTodo List:")
                 print(render(tasks))
-            elif choice in ["3", "update"]:
+            elif command == "update":
                 task_id = int(input("Enter task ID: ").strip())
                 tasks = self.task_manager.get_all_tasks()
                 for task in tasks:
                     if task.id == task_id:
-                        new_status = not task.is_done
+                        new_title = input(f"Enter new title (current: {task.title}): ").strip() or task.title
+                        new_description = input(f"Enter new description (current: {task.description}): ").strip() or task.description
+                        new_status_input = input(f"Is it done? (yes/no, current: {'yes' if task.is_done else 'no'}): ").strip().lower()
+                        new_status = new_status_input == "yes" if new_status_input else task.is_done
+                        self.task_manager.update_task(task_id, new_title, new_description)
                         self.task_manager.set_task_status(task_id, new_status)
-                        print(f"Todo with ID {task_id} status toggled to {'done' if new_status else 'not done'}.")
+                        print(f"Todo with ID {task_id} updated.")
                         break
                 else:
                     print(f"Todo with ID {task_id} not found.")
-            elif choice in ["4", "delete"]:
+            elif command == "delete":
                 task_id = int(input("Enter task ID to delete: ").strip())
                 tasks = self.task_manager.get_all_tasks()
                 if any(task.id == task_id for task in tasks):
@@ -53,8 +58,8 @@ class TodoCLIUI(TodoInterface):
                     print(f"Todo with ID {task_id} deleted.")
                 else:
                     print(f"Todo with ID {task_id} not found.")
-            elif choice in ["5", "exit"]:
+            elif command == "exit":
                 print("Exiting... Goodbye!")
                 break
             else:
-                print("Invalid option. Please try again.") 
+                print("Invalid command. Please try again.") 
