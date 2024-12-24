@@ -12,6 +12,11 @@ class TodoItem(BaseModel):
     description: str
     is_done: bool = False
 
+class TodoUpdateItem(BaseModel):
+    title: str = None
+    description: str = None
+    is_done: bool = None
+
 class TodoWebUI:
     def __init__(self, task_manager: TaskManager):
         self.task_manager = task_manager
@@ -34,10 +39,13 @@ class TodoWebUI:
             return {"message": "Todo added successfully"}
 
         @app.put("/todos/{todo_id}")
-        def update_todo_status(todo_id: int, is_done: bool = Query(...)):
+        def update_todo(todo_id: int, item: TodoUpdateItem):
             try:
-                self.task_manager.set_task_status(todo_id, is_done)
-                return {"message": "Todo status updated successfully"}
+                if item.title is not None or item.description is not None:
+                    self.task_manager.update_task(todo_id, item.title, item.description)
+                if item.is_done is not None:
+                    self.task_manager.set_task_status(todo_id, item.is_done)
+                return {"message": "Todo updated successfully"}
             except Exception as e:
                 raise HTTPException(status_code=404, detail=str(e))
 

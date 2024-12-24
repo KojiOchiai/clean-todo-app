@@ -29,11 +29,30 @@
             }
         }
 
+        async function editTodo(id) {
+            const title = document.getElementById(`title-${id}`).value;
+            const description = document.getElementById(`description-${id}`).value;
+            const isDone = document.getElementById(`todo-${id}`).checked;
+            const response = await fetch(`/todos/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ title, description, is_done: isDone })
+            });
+            if (response.ok) {
+                location.reload();
+            }
+        }
+
         async function updateTodoStatus(id) {
-            const checkbox = document.getElementById(`todo-${id}`);
-            const isDone = checkbox.checked;
-            const response = await fetch(`/todos/${id}?is_done=${isDone}`, {
-                method: 'PUT'
+            const isDone = document.getElementById(`todo-${id}`).checked;
+            const response = await fetch(`/todos/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ is_done: isDone })
             });
             if (response.ok) {
                 location.reload();
@@ -52,7 +71,9 @@
         {% for todo in todos %}
         <li>
             <input type="checkbox" id="todo-{{ todo.id }}" onclick="updateTodoStatus({{ todo.id }})" {% if todo.is_done %}checked{% endif %}>
-            {{ todo.title }}: {{ todo.description }}
+            <input type="text" id="title-{{ todo.id }}" value="{{ todo.title }}">
+            <input type="text" id="description-{{ todo.id }}" value="{{ todo.description }}">
+            <button onclick="editTodo({{ todo.id }})">Edit</button>
             <button onclick="deleteTodo({{ todo.id }})">Delete</button>
         </li>
         {% endfor %}

@@ -22,3 +22,14 @@ class TaskManager:
 
     def delete_task(self, task_id: int):
         self.repository.delete(task_id)
+
+    def update_task(self, task_id: int, title: str = None, description: str = None):
+        task = self.repository.get_task(task_id)
+        if task:
+            if title is not None:
+                task.title = title
+            if description is not None:
+                task.description = description
+            self.repository.update(task)
+        else:
+            raise ValueError("Task not found")

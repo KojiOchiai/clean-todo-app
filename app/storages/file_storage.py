@@ -43,4 +43,19 @@ class FileTodoStorage(TodoStorage):
     def delete(self, todo_id: int):
         data = self._load_data()
         data["todos"] = [todo for todo in data["todos"] if todo["id"] != todo_id]
+        self._save_data(data)
+
+    def get_task(self, todo_id: int) -> Todo:
+        data = self._load_data()
+        for todo in data["todos"]:
+            if todo["id"] == todo_id:
+                return Todo(**todo)
+        return None
+
+    def update(self, todo: Todo):
+        data = self._load_data()
+        for i, t in enumerate(data["todos"]):
+            if t["id"] == todo.id:
+                data["todos"][i] = todo.__dict__
+                break
         self._save_data(data) 

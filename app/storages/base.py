@@ -14,4 +14,10 @@ class TodoStorage:
         raise NotImplementedError
 
     def delete(self, todo_id: int):
+        raise NotImplementedError
+
+    def get_task(self, todo_id: int) -> Todo:
+        raise NotImplementedError
+
+    def update(self, todo: Todo):
         raise NotImplementedError 
