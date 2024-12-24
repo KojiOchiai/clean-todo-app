@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Query
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
@@ -34,7 +34,7 @@ class TodoWebUI:
             return {"message": "Todo added successfully"}
 
         @app.put("/todos/{todo_id}")
-        def update_todo_status(todo_id: int, is_done: bool):
+        def update_todo_status(todo_id: int, is_done: bool = Query(...)):
             try:
                 self.task_manager.set_task_status(todo_id, is_done)
                 return {"message": "Todo status updated successfully"}
