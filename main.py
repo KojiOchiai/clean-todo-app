@@ -1,6 +1,6 @@
 import argparse
 from app.ui import TodoWebUI, TodoCLIUI
-from app.storages import FileTodoStorage, InMemoryTodoStorage
+from app.storages import FileTodoStorage, InMemoryTodoStorage, SQLiteTodoStorage
 from app.manager import TaskManager
 
 def get_repository(storage_type: str):
@@ -9,8 +9,10 @@ def get_repository(storage_type: str):
         return FileTodoStorage(file_path=file_path)
     elif storage_type == "memory":
         return InMemoryTodoStorage()
+    elif storage_type == "sqlite":
+        return SQLiteTodoStorage()
     else:
-        raise ValueError("Invalid storage type. Use 'file' or 'memory'.")
+        raise ValueError("Invalid storage type. Use 'file', 'memory', or 'sqlite'.")
 
 def get_ui(ui_type: str, task_manager: TaskManager):
     if ui_type == "web":
@@ -22,7 +24,7 @@ def get_ui(ui_type: str, task_manager: TaskManager):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Todo Application")
-    parser.add_argument("--storage", choices=["file", "memory"], default="file", help="Type of storage to use")
+    parser.add_argument("--storage", choices=["file", "memory", "sqlite"], default="file", help="Type of storage to use")
     parser.add_argument("--ui", choices=["cli", "web"], default="cli", help="Type of UI to use")
     args = parser.parse_args()
 
