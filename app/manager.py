@@ -19,6 +19,9 @@ class TaskManager:
         return self.repository.get_all()
 
     def set_task_status(self, task_id: int, is_done: bool):
+        task = self.repository.get_task(task_id)
+        if task is None:
+            raise ValueError("Task not found")
         self.repository.update_status(task_id, is_done)
 
     def delete_task(self, task_id: int):
