@@ -14,6 +14,9 @@ class InMemoryTodoStorage(TodoStorage):
     def add(self, todo: Todo):
         self.todos.append(todo)
 
+    def delete(self, todo_id: int):
+        self.todos = [todo for todo in self.todos if todo.id != todo_id] 
+
     def get_all(self) -> list[Todo]:
         return self.todos
 
@@ -22,9 +25,6 @@ class InMemoryTodoStorage(TodoStorage):
             if todo.id == todo_id:
                 todo.is_done = is_done
                 break 
-
-    def delete(self, todo_id: int):
-        self.todos = [todo for todo in self.todos if todo.id != todo_id] 
 
     def get_task(self, todo_id: int) -> Todo:
         for todo in self.todos:

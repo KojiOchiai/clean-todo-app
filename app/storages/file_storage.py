@@ -28,6 +28,11 @@ class FileTodoStorage(TodoStorage):
         data["next_id"] += 1
         self._save_data(data)
 
+    def delete(self, todo_id: int):
+        data = self._load_data()
+        data["todos"] = [todo for todo in data["todos"] if todo["id"] != todo_id]
+        self._save_data(data)
+
     def get_all(self) -> list[Todo]:
         data = self._load_data()
         return [Todo(**todo) for todo in data["todos"]]
@@ -38,11 +43,6 @@ class FileTodoStorage(TodoStorage):
             if todo["id"] == todo_id:
                 todo["is_done"] = is_done
                 break
-        self._save_data(data)
-
-    def delete(self, todo_id: int):
-        data = self._load_data()
-        data["todos"] = [todo for todo in data["todos"] if todo["id"] != todo_id]
         self._save_data(data)
 
     def get_task(self, todo_id: int) -> Todo:
