@@ -173,3 +173,4 @@ cython_debug/
 
 # temporary files
 todo_data.json
+todos.db
