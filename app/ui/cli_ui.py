@@ -36,7 +36,8 @@ class TodoCLIUI(TodoInterface):
                 title = args[0]
                 description = args[1] if len(args) > 1 else ""
                 is_done = args[2].lower() == "yes" if len(args) > 2 else False
-                self.task_manager.add_task(title, description, is_done)
+                new_todo = self.task_manager.add_task(title, description, is_done)
+                print(f"Added Todo: [{new_todo.id}] {new_todo.title}: {new_todo.description} (Done: {new_todo.is_done})")
             elif command == "list":
                 tasks = self.task_manager.get_all_tasks()
                 print("\nTodo List:")
@@ -59,12 +60,11 @@ class TodoCLIUI(TodoInterface):
                         new_status = args[i + 1].lower() == "yes"
                 for task in tasks:
                     if task.id == task_id:
-                        new_title = new_title if new_title is not None else task.title
-                        new_description = new_description if new_description is not None else task.description
-                        new_status = new_status if new_status is not None else task.is_done
-                        self.task_manager.update_task(task_id, new_title, new_description)
-                        self.task_manager.set_task_status(task_id, new_status)
-                        print(f"Todo with ID {task_id} updated.")
+                        updated_task = self.task_manager.update_task(task_id, new_title, new_description)
+                        if new_status is not None:
+                            self.task_manager.set_task_status(task_id, new_status)
+                            updated_task = self.task_manager.update_task(task_id)  # 状態を再取得
+                        print(f"Updated Todo: [{updated_task.id}] {updated_task.title}: {updated_task.description} (Done: {updated_task.is_done})")
                         break
                 else:
                     print(f"Todo with ID {task_id} not found.")

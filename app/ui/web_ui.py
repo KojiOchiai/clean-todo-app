@@ -35,17 +35,16 @@ class TodoWebUI:
 
         @app.post("/todos", status_code=201)
         def add_todo(item: TodoItem):
-            self.task_manager.add_task(item.title, item.description, item.is_done)
-            return {"message": "Todo added successfully"}
+            new_todo = self.task_manager.add_task(item.title, item.description, item.is_done)
+            return {"message": "Todo added successfully", "todo": new_todo.__dict__}
 
         @app.put("/todos/{todo_id}")
         def update_todo(todo_id: int, item: TodoUpdateItem):
             try:
-                if item.title is not None or item.description is not None:
-                    self.task_manager.update_task(todo_id, item.title, item.description)
+                updated_task = self.task_manager.update_task(todo_id, item.title, item.description)
                 if item.is_done is not None:
                     self.task_manager.set_task_status(todo_id, item.is_done)
-                return {"message": "Todo updated successfully"}
+                return {"message": "Todo updated successfully", "todo": updated_task.__dict__}
             except Exception as e:
                 raise HTTPException(status_code=404, detail=str(e))
 
