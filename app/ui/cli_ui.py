@@ -20,6 +20,7 @@ class TodoCLIUI(TodoInterface):
             print("add - Add a new Todo")
             print("list - List all Todos")
             print("update - Update a Todo")
+            print("toggle - Toggle the done status of a Todo")
             print("delete - Delete a Todo")
             print("exit - Exit the application")
 
@@ -47,6 +48,17 @@ class TodoCLIUI(TodoInterface):
                         self.task_manager.update_task(task_id, new_title, new_description)
                         self.task_manager.set_task_status(task_id, new_status)
                         print(f"Todo with ID {task_id} updated.")
+                        break
+                else:
+                    print(f"Todo with ID {task_id} not found.")
+            elif command == "toggle":
+                task_id = int(input("Enter task ID to toggle status: ").strip())
+                tasks = self.task_manager.get_all_tasks()
+                for task in tasks:
+                    if task.id == task_id:
+                        new_status = not task.is_done
+                        self.task_manager.set_task_status(task_id, new_status)
+                        print(f"Todo with ID {task_id} status toggled to {'done' if new_status else 'not done'}.")
                         break
                 else:
                     print(f"Todo with ID {task_id} not found.")
