@@ -1,8 +1,11 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from app.manager import TaskManager
 
 app = FastAPI()
+templates = Jinja2Templates(directory="app/ui/templates")
 
 class TodoItem(BaseModel):
     title: str
@@ -15,6 +18,11 @@ class TodoWebUI:
         self._setup_routes()
 
     def _setup_routes(self):
+        @app.get("/", response_class=HTMLResponse)
+        async def read_root(request: Request):
+            todos = self.task_manager.get_all_tasks()
+            return templates.TemplateResponse("index.html", {"request": request, "todos": todos})
+
         @app.get("/todos")
         def list_todos():
             todos = self.task_manager.get_all_tasks()
