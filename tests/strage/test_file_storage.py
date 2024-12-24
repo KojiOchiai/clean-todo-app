@@ -48,4 +48,24 @@ def test_delete_task(storage):
     )
     storage.add(todo)
     storage.delete(todo.id)
-    assert storage.get_task(todo.id) is None 
+    assert storage.get_task(todo.id) is None
+
+def test_get_task_not_found(storage):
+    assert storage.get_task(999) is None
+
+def test_update_status(storage):
+    todo = Todo(
+        id=storage.get_next_id(),
+        title="Test Task",
+        description="This is a test task",
+        is_done=False
+    )
+    storage.add(todo)
+    storage.update_status(todo.id, True)
+    updated_todo = storage.get_task(todo.id)
+    assert updated_todo.is_done
+
+def test_update_status_not_found(storage):
+    # Ensure no exception is raised for updating status of a non-existent task
+    storage.update_status(999, True)
+    assert storage.get_task(999) is None 
