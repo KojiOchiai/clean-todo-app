@@ -36,12 +36,16 @@ class TodoCLIUI(TodoInterface):
                 print(render(tasks))
             elif choice in ["3", "update"]:
                 task_id = int(input("Enter task ID: ").strip())
-                is_done = input("Is it done? (yes/no): ").strip().lower() == "yes"
-                self.task_manager.set_task_status(task_id, is_done)
-            elif choice == "4":
-                print("Exiting... Goodbye!")
-                break
-            elif choice == "5":
+                tasks = self.task_manager.get_all_tasks()
+                for task in tasks:
+                    if task.id == task_id:
+                        new_status = not task.is_done
+                        self.task_manager.set_task_status(task_id, new_status)
+                        print(f"Todo with ID {task_id} status toggled to {'done' if new_status else 'not done'}.")
+                        break
+                else:
+                    print(f"Todo with ID {task_id} not found.")
+            elif choice in ["4", "delete"]:
                 task_id = int(input("Enter task ID to delete: ").strip())
                 self.task_manager.delete_task(task_id)
                 print(f"Todo with ID {task_id} deleted.")
