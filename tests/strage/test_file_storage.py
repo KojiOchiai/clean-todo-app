@@ -1,6 +1,5 @@
 import pytest
 import os
-from app.models import Todo
 from app.storages.file_storage import FileTodoStorage
 from app.storages.base import NewTodo
 

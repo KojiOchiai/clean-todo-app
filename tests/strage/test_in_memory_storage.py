@@ -1,5 +1,4 @@
 import pytest
-from app.models import Todo
 from app.storages.in_memory import InMemoryTodoStorage
 from app.storages.base import NewTodo
 

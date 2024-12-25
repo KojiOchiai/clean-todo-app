@@ -1,6 +1,4 @@
 import pytest
-import os
-from app.models import Todo
 from app.storages.sqlite_storage import SQLiteTodoStorage
 from app.storages.base import NewTodo
 
