@@ -13,7 +13,10 @@ class TodoCLIUI(TodoInterface):
         def render(tasks: list[Todo]) -> str:
             return "\n".join(
                 [
-                    f"[{task.id}] [{'x' if task.is_done else ' '}] {task.title}: {task.description}"
+                    (
+                        f"[{task.id}] [{'x' if task.is_done else ' '}] "
+                        f"{task.title}: {task.description}"
+                    )
                     for task in tasks
                 ]
             )
@@ -21,11 +24,18 @@ class TodoCLIUI(TodoInterface):
         while True:
             print("\nCommands:")
             print(
-                "add --title <title> [--description <description>] [--status <is_done>] - Add a new Todo"
+                (
+                    "add --title <title> [--description <description>] "
+                    "[--status <is_done>] - Add a new Todo"
+                )
             )
             print("list - List all Todos")
             print(
-                "update <id> [--title <new_title>] [--description <new_description>] [--status <new_status>] - Update a Todo"
+                (
+                    "update <id> [--title <new_title>] "
+                    "[--description <new_description>] [--status <new_status>] "
+                    "- Update a Todo"
+                )
             )
             print("toggle <id> - Toggle the done status of a Todo")
             print("delete <id> - Delete a Todo")
