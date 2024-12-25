@@ -1,21 +1,23 @@
-import os
 import json
+import os
+
 from app.models import Todo
-from app.storages.base import TodoStorage, NewTodo
+from app.storages.base import NewTodo, TodoStorage
+
 
 class FileTodoStorage(TodoStorage):
     def __init__(self, file_path: str):
         self.file_path = file_path
         if not os.path.exists(self.file_path):
-            with open(self.file_path, 'w') as file:
+            with open(self.file_path, "w") as file:
                 json.dump({"todos": [], "next_id": 1}, file)
 
     def _load_data(self):
-        with open(self.file_path, 'r') as file:
+        with open(self.file_path, "r") as file:
             return json.load(file)
 
     def _save_data(self, data):
-        with open(self.file_path, 'w') as file:
+        with open(self.file_path, "w") as file:
             json.dump(data, file)
 
     def add(self, new_todo: NewTodo) -> Todo:
@@ -24,7 +26,7 @@ class FileTodoStorage(TodoStorage):
             id=data["next_id"],
             title=new_todo.title,
             description=new_todo.description,
-            is_done=new_todo.is_done
+            is_done=new_todo.is_done,
         )
         data["todos"].append(todo.__dict__)
         data["next_id"] += 1
@@ -61,4 +63,4 @@ class FileTodoStorage(TodoStorage):
             if t["id"] == todo.id:
                 data["todos"][i] = todo.__dict__
                 break
-        self._save_data(data) 
+        self._save_data(data)

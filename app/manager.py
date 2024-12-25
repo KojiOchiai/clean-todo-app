@@ -1,16 +1,13 @@
 from app.models import Todo
-from app.storages.base import TodoStorage, NewTodo
+from app.storages.base import NewTodo, TodoStorage
+
 
 class TaskManager:
     def __init__(self, repository: TodoStorage):
         self.repository = repository
 
     def add_task(self, title: str, description: str, is_done: bool = False) -> Todo:
-        new_todo = NewTodo(
-            title=title,
-            description=description,
-            is_done=is_done
-        )
+        new_todo = NewTodo(title=title, description=description, is_done=is_done)
         todo = self.repository.add(new_todo)
         return todo
 
@@ -26,7 +23,9 @@ class TaskManager:
     def delete_task(self, task_id: int):
         self.repository.delete(task_id)
 
-    def update_task(self, task_id: int, title: str = None, description: str = None) -> Todo:
+    def update_task(
+        self, task_id: int, title: str = None, description: str = None
+    ) -> Todo:
         task = self.repository.get_task(task_id)
         if task:
             if title is not None:

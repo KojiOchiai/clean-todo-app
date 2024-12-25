@@ -1,11 +1,14 @@
-from app.models import Todo
 from dataclasses import dataclass
+
+from app.models import Todo
+
 
 @dataclass
 class NewTodo:
     title: str
     description: str
-    is_done: bool = False 
+    is_done: bool = False
+
 
 class TodoStorage:
     def add(self, new_todo: NewTodo) -> Todo:

@@ -1,7 +1,9 @@
+import shlex
+
 from app.manager import TaskManager
 from app.models import Todo
 from app.ui.base import TodoInterface
-import shlex
+
 
 class TodoCLIUI(TodoInterface):
     def __init__(self, task_manager: TaskManager):
@@ -18,9 +20,13 @@ class TodoCLIUI(TodoInterface):
 
         while True:
             print("\nCommands:")
-            print("add --title <title> [--description <description>] [--status <is_done>] - Add a new Todo")
+            print(
+                "add --title <title> [--description <description>] [--status <is_done>] - Add a new Todo"
+            )
             print("list - List all Todos")
-            print("update <id> [--title <new_title>] [--description <new_description>] [--status <new_status>] - Update a Todo")
+            print(
+                "update <id> [--title <new_title>] [--description <new_description>] [--status <new_status>] - Update a Todo"
+            )
             print("toggle <id> - Toggle the done status of a Todo")
             print("delete <id> - Delete a Todo")
             print("exit - Exit the application")
@@ -45,7 +51,9 @@ class TodoCLIUI(TodoInterface):
                     print("Error: 'add' command requires a title.")
                     continue
                 new_todo = self.task_manager.add_task(title, description, is_done)
-                print(f"Added Todo: [{new_todo.id}] {new_todo.title}: {new_todo.description} (Done: {new_todo.is_done})")
+                print(
+                    f"Added Todo: [{new_todo.id}] {new_todo.title}: {new_todo.description} (Done: {new_todo.is_done})"
+                )
             elif command == "list":
                 tasks = self.task_manager.get_all_tasks()
                 print("\nTodo List:")
@@ -65,11 +73,17 @@ class TodoCLIUI(TodoInterface):
                         new_description = args[i + 1]
                     elif args[i] == "--status":
                         new_status = args[i + 1].lower() == "yes"
-                updated_task = self.task_manager.update_task(task_id, new_title, new_description)
+                updated_task = self.task_manager.update_task(
+                    task_id, new_title, new_description
+                )
                 if new_status is not None:
                     self.task_manager.set_task_status(task_id, new_status)
-                    updated_task = self.task_manager.update_task(task_id)  # 状態を再取得
-                print(f"Updated Todo: [{updated_task.id}] {updated_task.title}: {updated_task.description} (Done: {updated_task.is_done})")
+                    updated_task = self.task_manager.update_task(
+                        task_id
+                    )  # 状態を再取得
+                print(
+                    f"Updated Todo: [{updated_task.id}] {updated_task.title}: {updated_task.description} (Done: {updated_task.is_done})"
+                )
             elif command == "toggle":
                 if len(args) < 1:
                     print("Error: 'toggle' command requires an ID.")
@@ -80,7 +94,9 @@ class TodoCLIUI(TodoInterface):
                     if task.id == task_id:
                         new_status = not task.is_done
                         self.task_manager.set_task_status(task_id, new_status)
-                        print(f"Todo with ID {task_id} status toggled to {'done' if new_status else 'not done'}.")
+                        print(
+                            f"Todo with ID {task_id} status toggled to {'done' if new_status else 'not done'}."
+                        )
                         break
                 else:
                     print(f"Todo with ID {task_id} not found.")
@@ -99,4 +115,4 @@ class TodoCLIUI(TodoInterface):
                 print("Exiting... Goodbye!")
                 break
             else:
-                print("Invalid command. Please try again.") 
+                print("Invalid command. Please try again.")

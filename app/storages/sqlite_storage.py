@@ -1,20 +1,23 @@
-from sqlalchemy import create_engine, Column, Integer, String, Boolean
+from sqlalchemy import Boolean, Column, Integer, String, create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
+
 from app.models import Todo
-from app.storages.base import TodoStorage, NewTodo
+from app.storages.base import NewTodo, TodoStorage
 
 Base = declarative_base()
 
+
 class TodoModel(Base):
-    __tablename__ = 'todos'
+    __tablename__ = "todos"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String, nullable=False)
     description = Column(String, nullable=True)
     is_done = Column(Boolean, default=False)
 
+
 class SQLiteTodoStorage(TodoStorage):
-    def __init__(self, db_url='sqlite:///todos.db'):
+    def __init__(self, db_url="sqlite:///todos.db"):
         self.engine = create_engine(db_url)
         Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine)
@@ -24,13 +27,18 @@ class SQLiteTodoStorage(TodoStorage):
         todo_model = TodoModel(
             title=new_todo.title,
             description=new_todo.description,
-            is_done=new_todo.is_done
+            is_done=new_todo.is_done,
         )
         session.add(todo_model)
         session.commit()
         session.refresh(todo_model)
         session.close()
-        return Todo(id=todo_model.id, title=todo_model.title, description=todo_model.description, is_done=todo_model.is_done)
+        return Todo(
+            id=todo_model.id,
+            title=todo_model.title,
+            description=todo_model.description,
+            is_done=todo_model.is_done,
+        )
 
     def delete(self, todo_id: int):
         session = self.Session()
@@ -42,7 +50,15 @@ class SQLiteTodoStorage(TodoStorage):
         session = self.Session()
         todos = session.query(TodoModel).all()
         session.close()
-        return [Todo(id=todo.id, title=todo.title, description=todo.description, is_done=todo.is_done) for todo in todos]
+        return [
+            Todo(
+                id=todo.id,
+                title=todo.title,
+                description=todo.description,
+                is_done=todo.is_done,
+            )
+            for todo in todos
+        ]
 
     def update_status(self, todo_id: int, is_done: bool):
         session = self.Session()
@@ -57,7 +73,12 @@ class SQLiteTodoStorage(TodoStorage):
         todo = session.query(TodoModel).filter(TodoModel.id == todo_id).first()
         session.close()
         if todo:
-            return Todo(id=todo.id, title=todo.title, description=todo.description, is_done=todo.is_done)
+            return Todo(
+                id=todo.id,
+                title=todo.title,
+                description=todo.description,
+                is_done=todo.is_done,
+            )
         return None
 
     def update(self, todo: Todo):
@@ -68,4 +89,4 @@ class SQLiteTodoStorage(TodoStorage):
             todo_model.description = todo.description
             todo_model.is_done = todo.is_done
             session.commit()
-        session.close() 
+        session.close()
