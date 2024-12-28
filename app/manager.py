@@ -54,6 +54,12 @@ class UserManager:
         )
         return self.storage.add_user(new_user)
 
+    def authenticate_user(self, email: str, password: str) -> User:
+        user = self.storage.get_user_by_email(email)
+        if not user or not self.verify_password(password, user.hashed_password):
+            raise ValueError("Invalid credentials")
+        return user
+
     def hash_password(self, password: str) -> str:
         return self.pwd_context.hash(password)
 
