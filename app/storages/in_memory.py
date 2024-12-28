@@ -4,8 +4,8 @@ from app.storages.base import NewTodo, NewUser, TodoStorage, UserStorage
 
 class InMemoryTodoStorage(TodoStorage):
     def __init__(self):
-        self.todos = []
-        self.next_id = 1
+        self.todos: list[Todo] = []
+        self.next_id: int = 1
 
     def add(self, new_todo: NewTodo) -> Todo:
         todo = Todo(
@@ -49,8 +49,8 @@ class InMemoryTodoStorage(TodoStorage):
 
 class InMemoryUserStorage(UserStorage):
     def __init__(self):
-        self.users = []
-        self.next_id = 1
+        self.users: list[User] = []
+        self.next_id: int = 1
 
     def add_user(self, new_user: NewUser) -> User:
         user = User(
