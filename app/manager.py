@@ -8,13 +8,20 @@ class TaskManager:
     def __init__(self, storage: TodoStorage):
         self.storage = storage
 
-    def add_task(self, title: str, description: str, is_done: bool = False) -> Todo:
-        new_todo = NewTodo(title=title, description=description, is_done=is_done)
+    def add_task(
+        self, user_id: int, title: str, description: str, is_done: bool = False
+    ) -> Todo:
+        new_todo = NewTodo(
+            user_id=user_id, title=title, description=description, is_done=is_done
+        )
         todo = self.storage.add(new_todo)
         return todo
 
     def get_all_tasks(self) -> list[Todo]:
         return self.storage.get_all()
+
+    def get_tasks_by_user_id(self, user_id: int) -> list[Todo]:
+        return self.storage.get_tasks_by_user_id(user_id)
 
     def set_task_status(self, task_id: int, is_done: bool) -> None:
         task = self.storage.get_task(task_id)
