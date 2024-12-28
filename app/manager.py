@@ -46,6 +46,8 @@ class UserManager:
         self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
     def create_user(self, username: str, email: str, password: str) -> User:
+        if self.storage.get_user_by_email(email):
+            raise ValueError("User already exists")
         hashed_password = self.hash_password(password)
         new_user = NewUser(
             username=username, email=email, hashed_password=hashed_password
