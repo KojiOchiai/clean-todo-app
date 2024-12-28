@@ -70,7 +70,7 @@ class UserManager:
         username: str = None,
         email: str = None,
         password: str = None,
-    ):
+    ) -> User:
         user = self.get_user(user_id)
         if user:
             if username:
@@ -80,3 +80,6 @@ class UserManager:
             if password:
                 user.hashed_password = self.hash_password(password)
             self.user_storage.update_user(user)
+            return user
+        else:
+            raise ValueError("User not found")
