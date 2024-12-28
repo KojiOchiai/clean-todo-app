@@ -1,3 +1,6 @@
+import datetime
+
+import jwt
 from passlib.context import CryptContext
 
 from app.models import Todo, User
@@ -48,9 +51,10 @@ class TaskManager:
 
 
 class UserManager:
-    def __init__(self, user_storage: UserStorage):
+    def __init__(self, user_storage: UserStorage, secret_key: str):
         self.storage = user_storage
         self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+        self.secret_key = secret_key
 
     def create_user(self, username: str, email: str, password: str) -> User:
         if self.storage.get_user_by_email(email):
@@ -61,11 +65,45 @@ class UserManager:
         )
         return self.storage.add_user(new_user)
 
+    def login(self, email: str, password: str) -> str:
+        user = self.authenticate_user(email, password)
+        return self.create_access_token(user.id)
+
     def authenticate_user(self, email: str, password: str) -> User:
         user = self.storage.get_user_by_email(email)
         if not user or not self.verify_password(password, user.hashed_password):
             raise ValueError("Invalid credentials")
         return user
+
+    def create_access_token(
+        self, user_id: int, expires_delta: datetime.timedelta = None
+    ) -> str:
+        to_encode = {"user_id": user_id}
+        if not expires_delta:
+            expires_delta = datetime.timedelta(minutes=15)
+        expire = datetime.datetime.now(datetime.UTC) + expires_delta
+        to_encode.update({"exp": expire})
+        encoded_jwt = jwt.encode(to_encode, self.secret_key, algorithm="HS256")
+        return encoded_jwt
+
+    def get_user_by_token(self, token: str) -> User:
+        user_id = self.verify_access_token(token)
+        return self.storage.get_user_by_id(user_id)
+
+    def verify_access_token(self, token: str) -> bool:
+        try:
+            payload = jwt.decode(token, self.secret_key, algorithms=["HS256"])
+            user_id: int = payload.get("user_id")
+            if user_id is None:
+                raise ValueError("Invalid token")
+            return user_id
+        except jwt.ExpiredSignatureError:
+            raise ValueError("Token expired")
+        except jwt.JWTError:
+            raise ValueError("Invalid token")
+
+    def get_user_by_id(self, user_id: int) -> User:
+        return self.storage.get_user_by_id(user_id)
 
     def hash_password(self, password: str) -> str:
         return self.pwd_context.hash(password)
