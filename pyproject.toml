@@ -19,11 +19,11 @@ dev-dependencies = [
     "ruff>=0.8.4",
 ]
 
-[tool.poetry.dependencies]
-python = "^3.8"
-fastapi = "^0.68.0"
-uvicorn = "^0.15.0"
-sqlalchemy = "^1.4.0"
+# [tool.poetry.dependencies]
+# python = "^3.8"
+# fastapi = "^0.68.0"
+# uvicorn = "^0.15.0"
+# sqlalchemy = "^1.4.0"
 
 [tool.ruff]
 lint.select = ["E", "F", "I", "W"]
