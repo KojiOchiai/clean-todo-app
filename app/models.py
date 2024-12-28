@@ -7,3 +7,10 @@ class Todo:
     title: str
     description: str
     is_done: bool
+
+
+@dataclass
+class User:
+    user_id: int
+    username: str
+    email: str
