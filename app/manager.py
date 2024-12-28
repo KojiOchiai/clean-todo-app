@@ -8,7 +8,7 @@ class TaskManager:
     def __init__(self, storage: TodoStorage):
         self.storage = storage
 
-    def add_task(
+    def create_task(
         self, user_id: int, title: str, description: str, is_done: bool = False
     ) -> Todo:
         new_todo = NewTodo(
