@@ -15,7 +15,7 @@ class NewTodo:
 class NewUser:
     username: str
     email: str
-    password: str
+    hashed_password: str
 
 
 class TodoStorage:
