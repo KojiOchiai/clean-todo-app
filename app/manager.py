@@ -111,9 +111,6 @@ class UserManager:
     def verify_password(self, plain_password: str, hashed_password: str) -> bool:
         return self.pwd_context.verify(plain_password, hashed_password)
 
-    def get_user(self, user_id: int) -> User:
-        return self.storage.get_user(user_id)
-
     def delete_user(self, user_id: int) -> None:
         self.storage.delete_user(user_id)
 
