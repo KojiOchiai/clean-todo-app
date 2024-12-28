@@ -20,9 +20,6 @@ class TaskManager:
         todo = self.storage.add(new_todo)
         return todo
 
-    def get_all_tasks(self) -> list[Todo]:
-        return self.storage.get_all()
-
     def get_tasks_by_user_id(self, user_id: int) -> list[Todo]:
         return self.storage.get_tasks_by_user_id(user_id)
 
