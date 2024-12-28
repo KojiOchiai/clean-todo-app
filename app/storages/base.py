@@ -51,6 +51,12 @@ class UserStorage:
     def get_user(self, user_id: int) -> User:
         raise NotImplementedError
 
+    def get_user_by_id(self, user_id: int) -> User:
+        raise NotImplementedError
+
+    def get_user_by_email(self, email: str) -> User:
+        raise NotImplementedError
+
     def get_all_users(self) -> list[User]:
         raise NotImplementedError
 

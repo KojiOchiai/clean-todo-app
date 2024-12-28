@@ -73,6 +73,18 @@ class InMemoryUserStorage(UserStorage):
                 return user
         return None
 
+    def get_user_by_id(self, user_id: int) -> User:
+        for user in self.users:
+            if user.id == user_id:
+                return user
+        return None
+
+    def get_user_by_email(self, email: str) -> User:
+        for user in self.users:
+            if user.email == email:
+                return user
+        return None
+
     def get_all_users(self) -> list[User]:
         return self.users
 
