@@ -64,9 +64,6 @@ class InMemoryTodoStorage(TodoStorage):
     def delete(self, todo_id: int):
         self.todos = [todo for todo in self.todos if todo.id != todo_id]
 
-    def get_all(self) -> list[Todo]:
-        return self.todos
-
     def get_all_by_user_id(self, user_id: int) -> list[Todo]:
         return [todo for todo in self.todos if todo.user_id == user_id]
 
@@ -76,7 +73,7 @@ class InMemoryTodoStorage(TodoStorage):
                 todo.is_done = is_done
                 break
 
-    def get_task(self, todo_id: int) -> Todo:
+    def get_task_by_id(self, todo_id: int) -> Todo:
         for todo in self.todos:
             if todo.id == todo_id:
                 return todo

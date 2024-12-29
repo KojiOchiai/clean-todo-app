@@ -45,16 +45,13 @@ class TodoStorage:
     def delete(self, todo_id: int):
         raise NotImplementedError
 
-    def get_all(self) -> list[Todo]:
-        raise NotImplementedError
-
     def get_all_by_user_id(self, user_id: int) -> list[Todo]:
         raise NotImplementedError
 
     def update_status(self, todo_id: int, is_done: bool):
         raise NotImplementedError
 
-    def get_task(self, todo_id: int) -> Todo:
+    def get_task_by_id(self, todo_id: int) -> Todo:
         raise NotImplementedError
 
     def update(self, todo: Todo):
