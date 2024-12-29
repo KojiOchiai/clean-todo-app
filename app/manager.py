@@ -108,23 +108,37 @@ class TaskManager:
     def get_tasks_by_user_id(self, user_id: int) -> list[Todo]:
         return self.storage.get_tasks_by_user_id(user_id)
 
-    def set_task_status(self, user_id: int, task_id: int, is_done: bool) -> None:
-        task = self.storage.get_task(task_id)
-        if task is None or task.user_id != user_id:
+    def get_task_by_id(self, user_id: int, task_id: int) -> Todo:
+        task = self.storage.get_task_by_id(task_id)
+        if task is None:
+            raise ValueError("Task not found")
+        if task.user_id != user_id:
+            raise ValueError("Task not found")
+        return task
+
+    def set_task_status(self, user_id: int, task_id: int, is_done: bool) -> Todo:
+        task = self.storage.get_task_by_id(task_id)
+        if task is None:
+            raise ValueError("Task not found")
+        if task.user_id != user_id:
             raise ValueError("Task not found")
         self.storage.update_status(task_id, is_done)
 
     def delete_task(self, user_id: int, task_id: int) -> None:
-        task = self.storage.get_task(task_id)
-        if task is None or task.user_id != user_id:
+        task = self.storage.get_task_by_id(task_id)
+        if task is None:
+            raise ValueError("Task not found")
+        if task.user_id != user_id:
             raise ValueError("Task not found")
         self.storage.delete(task_id)
 
     def update_task(
         self, user_id: int, task_id: int, title: str = None, description: str = None
     ) -> Todo:
-        task = self.storage.get_task(task_id)
-        if task is None or task.user_id != user_id:
+        task = self.storage.get_task_by_id(task_id)
+        if task is None:
+            raise ValueError("Task not found")
+        if task.user_id != user_id:
             raise ValueError("Task not found")
         if title is not None:
             task.title = title
