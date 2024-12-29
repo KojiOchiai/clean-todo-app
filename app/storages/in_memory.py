@@ -74,16 +74,16 @@ class InMemoryTodoStorage(TodoStorage):
     def get_tasks_by_user_id(self, user_id: int) -> list[Todo]:
         return [todo for todo in self.todos if todo.user_id == user_id]
 
+    def get_task_by_id(self, todo_id: int) -> Todo | None:
+        for todo in self.todos:
+            if todo.id == todo_id:
+                return todo
+        return None
+
     def update_status(self, todo_id: int, is_done: bool) -> Todo | None:
         for todo in self.todos:
             if todo.id == todo_id:
                 todo.is_done = is_done
-                return todo
-        return None
-
-    def get_task_by_id(self, todo_id: int) -> Todo | None:
-        for todo in self.todos:
-            if todo.id == todo_id:
                 return todo
         return None
 
