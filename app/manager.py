@@ -7,48 +7,6 @@ from app.models import Todo, User
 from app.storages.base import NewTodo, NewUser, TodoStorage, UserStorage
 
 
-class TaskManager:
-    def __init__(self, storage: TodoStorage):
-        self.storage = storage
-
-    def create_task(
-        self, user_id: int, title: str, description: str, is_done: bool = False
-    ) -> Todo:
-        new_todo = NewTodo(
-            user_id=user_id, title=title, description=description, is_done=is_done
-        )
-        todo = self.storage.add(new_todo)
-        return todo
-
-    def get_tasks_by_user_id(self, user_id: int) -> list[Todo]:
-        return self.storage.get_tasks_by_user_id(user_id)
-
-    def set_task_status(self, user_id: int, task_id: int, is_done: bool) -> None:
-        task = self.storage.get_task(task_id)
-        if task is None or task.user_id != user_id:
-            raise ValueError("Task not found")
-        self.storage.update_status(task_id, is_done)
-
-    def delete_task(self, user_id: int, task_id: int) -> None:
-        task = self.storage.get_task(task_id)
-        if task is None or task.user_id != user_id:
-            raise ValueError("Task not found")
-        self.storage.delete(task_id)
-
-    def update_task(
-        self, user_id: int, task_id: int, title: str = None, description: str = None
-    ) -> Todo:
-        task = self.storage.get_task(task_id)
-        if task is None or task.user_id != user_id:
-            raise ValueError("Task not found")
-        if title is not None:
-            task.title = title
-        if description is not None:
-            task.description = description
-        self.storage.update(task)
-        return task
-
-
 class UserManager:
     def __init__(self, user_storage: UserStorage, secret_key: str):
         self.storage = user_storage
@@ -132,3 +90,45 @@ class UserManager:
             return user
         else:
             raise ValueError("User not found")
+
+
+class TaskManager:
+    def __init__(self, storage: TodoStorage):
+        self.storage = storage
+
+    def create_task(
+        self, user_id: int, title: str, description: str, is_done: bool = False
+    ) -> Todo:
+        new_todo = NewTodo(
+            user_id=user_id, title=title, description=description, is_done=is_done
+        )
+        todo = self.storage.add(new_todo)
+        return todo
+
+    def get_tasks_by_user_id(self, user_id: int) -> list[Todo]:
+        return self.storage.get_tasks_by_user_id(user_id)
+
+    def set_task_status(self, user_id: int, task_id: int, is_done: bool) -> None:
+        task = self.storage.get_task(task_id)
+        if task is None or task.user_id != user_id:
+            raise ValueError("Task not found")
+        self.storage.update_status(task_id, is_done)
+
+    def delete_task(self, user_id: int, task_id: int) -> None:
+        task = self.storage.get_task(task_id)
+        if task is None or task.user_id != user_id:
+            raise ValueError("Task not found")
+        self.storage.delete(task_id)
+
+    def update_task(
+        self, user_id: int, task_id: int, title: str = None, description: str = None
+    ) -> Todo:
+        task = self.storage.get_task(task_id)
+        if task is None or task.user_id != user_id:
+            raise ValueError("Task not found")
+        if title is not None:
+            task.title = title
+        if description is not None:
+            task.description = description
+        self.storage.update(task)
+        return task
