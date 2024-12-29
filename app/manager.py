@@ -20,7 +20,6 @@ class UserManager:
         new_user = NewUser(
             username=username, email=email, hashed_password=hashed_password
         )
-        print(new_user)
         return self.storage.add_user(new_user)
 
     def login(self, username: str, password: str) -> str:
