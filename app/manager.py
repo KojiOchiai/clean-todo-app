@@ -1,6 +1,6 @@
 import datetime
 
-import jwt
+from jose import jwt
 from passlib.context import CryptContext
 
 from app.models import Todo, User
@@ -8,28 +8,31 @@ from app.storages.base import NewTodo, NewUser, TodoStorage, UserStorage
 
 
 class UserManager:
-    def __init__(self, user_storage: UserStorage, secret_key: str):
-        self.storage = user_storage
+    def __init__(self, storage: UserStorage, secret_key: str):
+        self.storage = storage
         self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
         self.secret_key = secret_key
 
     def create_user(self, username: str, email: str, password: str) -> User:
-        if self.storage.get_user_by_email(email):
+        if self.storage.get_user_by_username(username):
             raise ValueError("User already exists")
         hashed_password = self.hash_password(password)
         new_user = NewUser(
             username=username, email=email, hashed_password=hashed_password
         )
+        print(new_user)
         return self.storage.add_user(new_user)
 
-    def login(self, email: str, password: str) -> str:
-        user = self.authenticate_user(email, password)
+    def login(self, username: str, password: str) -> str:
+        user = self.authenticate_user(username, password)
         return self.create_access_token(user.id)
 
-    def authenticate_user(self, email: str, password: str) -> User:
-        user = self.storage.get_user_by_email(email)
-        if not user or not self.verify_password(password, user.hashed_password):
-            raise ValueError("Invalid credentials")
+    def authenticate_user(self, username: str, password: str) -> User:
+        user = self.storage.get_user_by_username(username)
+        if not user:
+            raise ValueError("User not found")
+        if not self.verify_password(password, user.hashed_password):
+            raise ValueError("Invalid password")
         return user
 
     def create_access_token(
@@ -50,7 +53,7 @@ class UserManager:
     def verify_access_token(self, token: str) -> bool:
         try:
             payload = jwt.decode(token, self.secret_key, algorithms=["HS256"])
-            user_id: int = payload.get("user_id")
+            user_id: int | None = payload.get("user_id")
             if user_id is None:
                 raise ValueError("Invalid token")
             return user_id
