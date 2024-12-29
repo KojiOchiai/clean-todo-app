@@ -1,28 +1,18 @@
 import argparse
 
 from app.manager import TaskManager, UserManager
-from app.storages import (
-    FileTodoStorage,
-    FileUserStorage,
-    InMemoryTodoStorage,
-    InMemoryUserStorage,
-    SQLiteTodoStorage,
-)
+from app.storages import get_file_storage, get_in_memory_storage, get_sqlite_storage
+from app.storages.base import TodoStorage, UserStorage
 from app.ui import TodoCLIUI, TodoWebUI
 
 
-def get_storage(storage_type: str):
+def get_storage(storage_type: str) -> tuple[UserStorage, TodoStorage]:
     if storage_type == "file":
-        todo_file_path = "todo_data.json"
-        user_file_path = "user_data.json"
-        return (
-            FileUserStorage(file_path=user_file_path),
-            FileTodoStorage(file_path=todo_file_path),
-        )
+        return get_file_storage("data")
     elif storage_type == "memory":
-        return InMemoryUserStorage(), InMemoryTodoStorage()
+        return get_in_memory_storage()
     elif storage_type == "sqlite":
-        return SQLiteTodoStorage()
+        return get_sqlite_storage("sqlite:///todos.db")
     else:
         raise ValueError("Invalid storage type. Use 'file', 'memory', or 'sqlite'.")
 
