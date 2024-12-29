@@ -93,3 +93,7 @@ class InMemoryTodoStorage(TodoStorage):
                 self.todos[i] = todo
                 return todo
         return None
+
+
+def get_in_memory_storage() -> tuple[InMemoryUserStorage, InMemoryTodoStorage]:
+    return InMemoryUserStorage(), InMemoryTodoStorage()

@@ -1,5 +1,6 @@
 import json
 import os
+import pathlib
 
 from app.models import Todo, User
 from app.storages.base import NewTodo, NewUser, TodoStorage, UserStorage
@@ -134,3 +135,15 @@ class FileTodoStorage(TodoStorage):
                 data["todos"][i] = todo.__dict__
                 break
         self._save_data(data)
+
+
+def get_file_storage(dir_path: str) -> tuple[FileUserStorage, FileTodoStorage]:
+    path = pathlib.Path(dir_path)
+    if not path.exists():
+        path.mkdir(parents=True, exist_ok=True)
+    user_file_path = path / "user_data.json"
+    todo_file_path = path / "todo_data.json"
+    return (
+        FileUserStorage(file_path=user_file_path),
+        FileTodoStorage(file_path=todo_file_path),
+    )

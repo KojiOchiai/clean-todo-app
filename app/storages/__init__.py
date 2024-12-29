@@ -1,4 +1,3 @@
-from .base import TodoStorage, UserStorage
-from .file_storage import FileTodoStorage, FileUserStorage
-from .in_memory import InMemoryTodoStorage, InMemoryUserStorage
-from .sqlite_storage import SQLiteTodoStorage
+from .file_storage import get_file_storage
+from .in_memory import get_in_memory_storage
+from .sqlite_storage import get_sqlite_storage
