@@ -2,6 +2,7 @@
 
 import { Login } from '@/components/Login'
 import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { LogOut, Trash2 } from 'lucide-react'
@@ -60,8 +61,8 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md bg-white w-full p-6">
+    <div className="min-h-screen bg-gray-100 flex items-stretch justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <Card className="max-w-md w-full p-6">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">Todo App</h1>
           <Button
@@ -112,7 +113,7 @@ export default function App() {
             </li>
           ))}
         </ul>
-      </div>
+      </Card>
     </div>
   )
 }
