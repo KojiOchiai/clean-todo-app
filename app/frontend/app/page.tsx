@@ -77,6 +77,7 @@ export default function App() {
       // save token to local storage
       localStorage.setItem('authToken', token);
       setToken(token);
+      fetchTodos(token);
 
     } catch (error) {
       const errorMessage = (error as Error).message;
