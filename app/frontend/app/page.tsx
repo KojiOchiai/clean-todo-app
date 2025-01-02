@@ -11,12 +11,14 @@ import { useEffect, useState } from 'react'
 interface Todo {
   id: number;
   title: string;
+  description: string;
   is_done: boolean;
 }
 
 export default function App() {
   const [todos, setTodos] = useState<Todo[]>([])
   const [newTodo, setNewTodo] = useState('')
+  const [newDescription, setNewDescription] = useState('')
   const [token, setToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const apiUrl = process.env.NODE_ENV === 'production' 
@@ -101,7 +103,7 @@ export default function App() {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify({ title: newTodo, description: '', is_done: false })
+          body: JSON.stringify({ title: newTodo, description: newDescription, is_done: false })
         });
 
         if (!response.ok) {
@@ -111,6 +113,7 @@ export default function App() {
         const data = await response.json();
         setTodos([...todos, data.todo]);
         setNewTodo('');
+        setNewDescription('');
       } catch (error) {
         alert(`Error adding todo: ${(error as Error).message}`);
       }
@@ -201,6 +204,13 @@ export default function App() {
             placeholder="Enter a new task"
             className="flex-grow mr-2"
           />
+          <Input
+            type="text"
+            value={newDescription}
+            onChange={(e) => setNewDescription(e.target.value)}
+            placeholder="Enter a description"
+            className="flex-grow mr-2"
+          />
           <Button onClick={addTodo}>Add</Button>
         </div>
         <ul className="space-y-2">
@@ -219,6 +229,7 @@ export default function App() {
                 >
                   {todo.title}
                 </label>
+                <p className="ml-4 text-sm text-gray-600">{todo.description}</p>
               </div>
               <Button
                 variant="ghost"
