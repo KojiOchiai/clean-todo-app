@@ -18,6 +18,7 @@ export default function App() {
   const [todos, setTodos] = useState<Todo[]>([])
   const [newTodo, setNewTodo] = useState('')
   const [token, setToken] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
   const tokenUrl = process.env.NODE_ENV === 'production' 
     ? '/token' 
     : 'http://localhost:8000/token';
@@ -25,6 +26,7 @@ export default function App() {
   useEffect(() => {
     const storedToken = localStorage.getItem('authToken');
     setToken(storedToken);
+    setLoading(false);
   }, []);
 
   const handleLogin = async (username: string, password: string) => {
@@ -81,6 +83,14 @@ export default function App() {
 
   const deleteTodo = (id: number) => {
     setTodos(todos.filter(todo => todo.id !== id))
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-100">
+        <p>Loading...</p>
+      </div>
+    )
   }
 
   if (!token) {
