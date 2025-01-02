@@ -240,7 +240,7 @@ export default function App() {
         )}
         <ul className="space-y-2">
           {todos.map(todo => (
-            <li key={todo.id} className="flex items-center justify-between p-2 border rounded">
+            <li key={todo.id} className="flex items-center justify-between p-2">
               <div className="flex items-center">
                 <Checkbox
                   id={`todo-${todo.id}`}
