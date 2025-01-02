@@ -254,7 +254,7 @@ export default function App() {
                 >
                   {todo.title}
                 </label>
-                <p className="ml-4 text-sm text-gray-600">{todo.description}</p>
+                <p className="ml-4 text-sm text-gray-600 truncate max-w-xs">{todo.description}</p>
               </div>
               <Button
                 variant="ghost"
