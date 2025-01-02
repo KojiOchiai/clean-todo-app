@@ -28,6 +28,27 @@ class TodoCLIUI(TodoInterface):
                 f"{task.title}: {task.description}"
             )
 
+        def print_help():
+            print("\nCommands:")
+            print(
+                (
+                    "add --title <title> [--description <description>] "
+                    "[--status <is_done>] - Add a new Todo"
+                )
+            )
+            print("list - List all Todos")
+            print(
+                (
+                    "update <id> [--title <new_title>] "
+                    "[--description <new_description>] [--status <new_status>] "
+                    "- Update a Todo"
+                )
+            )
+            print("toggle <id> - Toggle the done status of a Todo")
+            print("delete <id> - Delete a Todo")
+            print("help - Show this help message")
+            print("exit - Exit the application")
+
         while True:
             print("Please login to continue, create a new account, or exit.")
             choice = input("Do you have an account? (yes/no/exit): ").strip().lower()
@@ -57,27 +78,9 @@ class TodoCLIUI(TodoInterface):
             else:
                 print("Invalid choice. Please try again.")
 
+        print_help()
         while True:
-            print("\nCommands:")
-            print(
-                (
-                    "add --title <title> [--description <description>] "
-                    "[--status <is_done>] - Add a new Todo"
-                )
-            )
-            print("list - List all Todos")
-            print(
-                (
-                    "update <id> [--title <new_title>] "
-                    "[--description <new_description>] [--status <new_status>] "
-                    "- Update a Todo"
-                )
-            )
-            print("toggle <id> - Toggle the done status of a Todo")
-            print("delete <id> - Delete a Todo")
-            print("exit - Exit the application")
-
-            command_input = input("Enter a command: ").strip()
+            command_input = input("\nEnter a command: ").strip()
             command_parts = shlex.split(command_input)
             command = command_parts[0]
             args = command_parts[1:]
@@ -144,7 +147,7 @@ class TodoCLIUI(TodoInterface):
                 except ValueError:
                     print(f"Todo with ID {task_id} not found.")
                     continue
-                self.task_manager.set_task_status(
+                task = self.task_manager.set_task_status(
                     self.get_user().id, task_id, not task.is_done
                 )
                 print(render(task))
@@ -160,6 +163,9 @@ class TodoCLIUI(TodoInterface):
                     print(f"Todo with ID {task_id} deleted.")
                 else:
                     print(f"Todo with ID {task_id} not found.")
+
+            elif command == "help":
+                print_help()
 
             elif command == "exit":
                 print("Exiting... Goodbye!")
