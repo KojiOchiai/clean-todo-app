@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { LogOut, Trash2 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface Todo {
   id: number;
@@ -15,12 +15,17 @@ interface Todo {
 }
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [todos, setTodos] = useState<Todo[]>([])
   const [newTodo, setNewTodo] = useState('')
+  const [token, setToken] = useState<string | null>(null)
   const tokenUrl = process.env.NODE_ENV === 'production' 
     ? '/token' 
     : 'http://localhost:8000/token';
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem('authToken');
+    setToken(storedToken);
+  }, []);
 
   const handleLogin = async (username: string, password: string) => {
     try {
@@ -46,8 +51,8 @@ export default function App() {
 
       // save token to local storage
       localStorage.setItem('authToken', token);
+      setToken(token);
 
-      setIsLoggedIn(true);
     } catch (error) {
       const errorMessage = (error as Error).message;
       alert(`Login failed. Please check your username and password. Error: ${errorMessage}`);
@@ -56,7 +61,8 @@ export default function App() {
 
   const handleLogout = () => {
     // Clear the todo list on logout to protect user privacy
-    setIsLoggedIn(false)
+    localStorage.removeItem('authToken');
+    setToken(null);
     setTodos([])
   }
 
@@ -77,7 +83,7 @@ export default function App() {
     setTodos(todos.filter(todo => todo.id !== id))
   }
 
-  if (!isLoggedIn) {
+  if (!token) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
         <Login onLogin={handleLogin} />
