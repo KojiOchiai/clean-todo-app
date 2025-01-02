@@ -51,26 +51,6 @@ export default function App() {
     };
   }, [formRef]);
 
-  const fetchTodos = async (authToken: string) => {
-    try {
-      const response = await fetch(`${apiUrl}/todos`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${authToken}`
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch todos');
-      }
-
-      const data = await response.json();
-      setTodos(data);
-    } catch (error) {
-      alert(`Error fetching todos: ${(error as Error).message}`);
-    }
-  }
-
   const handleLogin = async (username: string, password: string) => {
     try {
       const response = await fetch(`${apiUrl}/token`, {
@@ -108,6 +88,26 @@ export default function App() {
     localStorage.removeItem('authToken');
     setToken(null);
     setTodos([])
+  }
+
+  const fetchTodos = async (authToken: string) => {
+    try {
+      const response = await fetch(`${apiUrl}/todos`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${authToken}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch todos');
+      }
+
+      const data = await response.json();
+      setTodos(data);
+    } catch (error) {
+      alert(`Error fetching todos: ${(error as Error).message}`);
+    }
   }
 
   const addTodo = async () => {
