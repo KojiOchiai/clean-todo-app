@@ -25,7 +25,18 @@ def get_storage(storage_type: str) -> tuple[UserStorage, TodoStorage]:
 
 def get_ui(ui_type: str, user_manager: UserManager, task_manager: TaskManager):
     if ui_type == "web":
-        return TodoWebUI(user_manager=user_manager, task_manager=task_manager)
+        ui = TodoWebUI(user_manager=user_manager, task_manager=task_manager)
+
+        if os.getenv("IS_DEV_ENV") == "True":
+            ui.app.add_middleware(
+                CORSMiddleware,
+                allow_origins=["*"],
+                allow_credentials=True,
+                allow_methods=["*"],
+                allow_headers=["*"],
+            )
+
+        return ui
     elif ui_type == "cli":
         return TodoCLIUI(user_manager=user_manager, task_manager=task_manager)
     else:
