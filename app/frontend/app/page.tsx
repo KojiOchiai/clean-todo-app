@@ -18,16 +18,41 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [todos, setTodos] = useState<Todo[]>([])
   const [newTodo, setNewTodo] = useState('')
+  const tokenUrl = process.env.NODE_ENV === 'production' 
+    ? '/token' 
+    : 'http://localhost:8000/token';
 
-  const handleLogin = (username: string, password: string) => {
-    // Implement actual authentication logic here
-    // This example simply checks if username and password are not empty
-    if (username && password) {
-      setIsLoggedIn(true)
-    } else {
-      alert('Please enter both username and password.')
+  const handleLogin = async (username: string, password: string) => {
+    try {
+
+      const response = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          username,
+          password,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(errorMessage);
+      }
+
+      const data = await response.json();
+      const token = data.token;
+
+      // save token to local storage
+      localStorage.setItem('authToken', token);
+
+      setIsLoggedIn(true);
+    } catch (error) {
+      const errorMessage = (error as Error).message;
+      alert(`Login failed. Please check your username and password. Error: ${errorMessage}`);
     }
-  }
+  };
 
   const handleLogout = () => {
     // Clear the todo list on logout to protect user privacy
