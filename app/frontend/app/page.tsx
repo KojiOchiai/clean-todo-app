@@ -104,7 +104,7 @@ export default function App() {
       }
 
       const data = await response.json();
-      setTodos(data);
+      setTodos(data.reverse());
     } catch (error) {
       alert(`Error fetching todos: ${(error as Error).message}`);
     }
@@ -127,7 +127,7 @@ export default function App() {
         }
 
         const data = await response.json();
-        setTodos([...todos, data.todo]);
+        setTodos([data.todo, ...todos]);
         setNewTodo('');
         setNewDescription('');
       } catch (error) {
