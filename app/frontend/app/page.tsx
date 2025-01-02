@@ -10,8 +10,8 @@ import { useEffect, useState } from 'react'
 
 interface Todo {
   id: number;
-  text: string;
-  completed: boolean;
+  title: string;
+  is_done: boolean;
 }
 
 export default function App() {
@@ -19,20 +19,43 @@ export default function App() {
   const [newTodo, setNewTodo] = useState('')
   const [token, setToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
-  const tokenUrl = process.env.NODE_ENV === 'production' 
-    ? '/token' 
-    : 'http://localhost:8000/token';
+  const apiUrl = process.env.NODE_ENV === 'production' 
+    ? '' 
+    : 'http://localhost:8000';
 
   useEffect(() => {
     const storedToken = localStorage.getItem('authToken');
     setToken(storedToken);
     setLoading(false);
+
+    if (storedToken) {
+      fetchTodos(storedToken);
+    }
   }, []);
+
+  const fetchTodos = async (authToken: string) => {
+    try {
+      const response = await fetch(`${apiUrl}/todos`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${authToken}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch todos');
+      }
+
+      const data = await response.json();
+      setTodos(data);
+    } catch (error) {
+      alert(`Error fetching todos: ${(error as Error).message}`);
+    }
+  }
 
   const handleLogin = async (username: string, password: string) => {
     try {
-
-      const response = await fetch(tokenUrl, {
+      const response = await fetch(`${apiUrl}/token`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -68,21 +91,74 @@ export default function App() {
     setTodos([])
   }
 
-  const addTodo = () => {
+  const addTodo = async () => {
     if (newTodo.trim() !== '') {
-      setTodos([...todos, { id: Date.now(), text: newTodo, completed: false }])
-      setNewTodo('')
+      try {
+        const response = await fetch(`${apiUrl}/todos`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ title: newTodo, description: '', is_done: false })
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to add todo');
+        }
+
+        const data = await response.json();
+        setTodos([...todos, data.todo]);
+        setNewTodo('');
+      } catch (error) {
+        alert(`Error adding todo: ${(error as Error).message}`);
+      }
     }
   }
 
-  const toggleTodo = (id: number) => {
-    setTodos(todos.map(todo =>
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo
-    ))
+  const toggleTodo = async (id: number) => {
+    const todo = todos.find(todo => todo.id === id);
+    if (!todo) return;
+
+    try {
+      const response = await fetch(`${apiUrl}/todos/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ is_done: !todo.is_done })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update todo');
+      }
+
+      setTodos(todos.map(todo =>
+        todo.id === id ? { ...todo, is_done: !todo.is_done } : todo
+      ));
+    } catch (error) {
+      alert(`Error updating todo: ${(error as Error).message}`);
+    }
   }
 
-  const deleteTodo = (id: number) => {
-    setTodos(todos.filter(todo => todo.id !== id))
+  const deleteTodo = async (id: number) => {
+    try {
+      const response = await fetch(`${apiUrl}/todos/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete todo');
+      }
+
+      setTodos(todos.filter(todo => todo.id !== id));
+    } catch (error) {
+      alert(`Error deleting todo: ${(error as Error).message}`);
+    }
   }
 
   if (loading) {
@@ -132,15 +208,15 @@ export default function App() {
               <div className="flex items-center">
                 <Checkbox
                   id={`todo-${todo.id}`}
-                  checked={todo.completed}
+                  checked={todo.is_done}
                   onCheckedChange={() => toggleTodo(todo.id)}
                   className="mr-2"
                 />
                 <label
                   htmlFor={`todo-${todo.id}`}
-                  className={`${todo.completed ? 'line-through text-gray-500' : ''}`}
+                  className={`${todo.is_done ? 'line-through text-gray-500' : ''}`}
                 >
-                  {todo.text}
+                  {todo.title}
                 </label>
               </div>
               <Button
