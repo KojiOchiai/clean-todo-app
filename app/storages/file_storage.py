@@ -120,20 +120,23 @@ class FileTodoStorage(TodoStorage):
                 return Todo(**todo)
         return None
 
-    def update_status(self, todo_id: int, is_done: bool):
+    def update_status(self, todo_id: int, is_done: bool) -> Todo | None:
         data = self._load_data()
         for todo in data["todos"]:
             if todo["id"] == todo_id:
                 todo["is_done"] = is_done
-                break
-        self._save_data(data)
+                self._save_data(data)
+                return Todo(**todo)
+        return None
 
-    def update(self, todo: Todo):
+    def update(self, todo: Todo) -> Todo | None:
         data = self._load_data()
         for i, t in enumerate(data["todos"]):
             if t["id"] == todo.id:
                 data["todos"][i] = todo.__dict__
-                break
+                self._save_data(data)
+                return todo
+        return None
         self._save_data(data)
 
 

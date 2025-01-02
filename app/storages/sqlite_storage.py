@@ -188,15 +188,25 @@ class SQLiteTodoStorage(TodoStorage):
             )
         return None
 
-    def update_status(self, todo_id: int, is_done: bool):
+    def update_status(self, todo_id: int, is_done: bool) -> Todo | None:
         session = self.SessionLocal()
         todo = session.query(TodoModel).filter(TodoModel.id == todo_id).first()
         if todo:
             todo.is_done = is_done
             session.commit()
+            session.refresh(todo)
+            session.close()
+            return Todo(
+                id=todo.id,
+                user_id=todo.user_id,
+                title=todo.title,
+                description=todo.description,
+                is_done=todo.is_done,
+            )
         session.close()
+        return None
 
-    def update(self, todo: Todo):
+    def update(self, todo: Todo) -> Todo | None:
         session = self.SessionLocal()
         todo_model = session.query(TodoModel).filter(TodoModel.id == todo.id).first()
         if todo_model:
@@ -204,7 +214,11 @@ class SQLiteTodoStorage(TodoStorage):
             todo_model.description = todo.description
             todo_model.is_done = todo.is_done
             session.commit()
+            session.refresh(todo_model)
+            session.close()
+            return todo
         session.close()
+        return None
 
 
 def get_sqlite_storage(

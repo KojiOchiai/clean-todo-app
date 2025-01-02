@@ -124,7 +124,7 @@ class TaskManager:
             raise ValueError("Task not found")
         if task.user_id != user_id:
             raise ValueError("Task not found")
-        self.storage.update_status(task_id, is_done)
+        return self.storage.update_status(task_id, is_done)
 
     def delete_task(self, user_id: int, task_id: int) -> None:
         task = self.storage.get_task_by_id(task_id)
