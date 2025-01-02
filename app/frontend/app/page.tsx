@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { LogOut, Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface Todo {
   id: number;
@@ -21,9 +21,12 @@ export default function App() {
   const [newDescription, setNewDescription] = useState('')
   const [token, setToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [showAddForm, setShowAddForm] = useState(false)
   const apiUrl = process.env.NODE_ENV === 'production' 
     ? '' 
     : 'http://localhost:8000';
+
+  const formRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     const storedToken = localStorage.getItem('authToken');
@@ -34,6 +37,19 @@ export default function App() {
       fetchTodos(storedToken);
     }
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (formRef.current && !formRef.current.contains(event.target as Node)) {
+        setShowAddForm(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [formRef]);
 
   const fetchTodos = async (authToken: string) => {
     try {
@@ -196,23 +212,32 @@ export default function App() {
             Logout
           </Button>
         </div>
-        <div className="flex mb-4">
-          <Input
-            type="text"
-            value={newTodo}
-            onChange={(e) => setNewTodo(e.target.value)}
-            placeholder="Enter a new task"
-            className="flex-grow mr-2"
-          />
-          <Input
-            type="text"
-            value={newDescription}
-            onChange={(e) => setNewDescription(e.target.value)}
-            placeholder="Enter a description"
-            className="flex-grow mr-2"
-          />
-          <Button onClick={addTodo}>Add</Button>
-        </div>
+        {!showAddForm ? (
+          <Button
+            onClick={() => setShowAddForm(true)}
+            className="mb-4 w-full text-gray-600 bg-gray-200 hover:bg-gray-300 focus:ring-2 focus:ring-gray-400"
+          >
+            Add Todo
+          </Button>
+        ) : (
+          <div ref={formRef} className="flex flex-col mb-4">
+            <Input
+              type="text"
+              value={newTodo}
+              onChange={(e) => setNewTodo(e.target.value)}
+              placeholder="Enter a new task"
+              className="mb-2"
+            />
+            <Input
+              type="text"
+              value={newDescription}
+              onChange={(e) => setNewDescription(e.target.value)}
+              placeholder="Enter a description"
+              className="mb-2"
+            />
+            <Button onClick={addTodo} className="self-end">Add</Button>
+          </div>
+        )}
         <ul className="space-y-2">
           {todos.map(todo => (
             <li key={todo.id} className="flex items-center justify-between p-2 border rounded">
