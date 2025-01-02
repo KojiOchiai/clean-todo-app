@@ -1,9 +1,15 @@
 import argparse
+import os
+
+from dotenv import load_dotenv
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.manager import TaskManager, UserManager
 from app.storages import get_file_storage, get_in_memory_storage, get_sqlite_storage
 from app.storages.base import TodoStorage, UserStorage
 from app.ui import TodoCLIUI, TodoWebUI
+
+load_dotenv()
 
 
 def get_storage(storage_type: str) -> tuple[UserStorage, TodoStorage]:
@@ -41,7 +47,7 @@ if __name__ == "__main__":
 
     # Setup
     user_storage, todo_storage = get_storage(args.storage)
-    user_manager = UserManager(storage=user_storage, secret_key="secret")
+    user_manager = UserManager(storage=user_storage, secret_key=os.getenv("SECRET_KEY"))
     task_manager = TaskManager(storage=todo_storage)
     service = get_ui(args.ui, user_manager=user_manager, task_manager=task_manager)
     service.run()
