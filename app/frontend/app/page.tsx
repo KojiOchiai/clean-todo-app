@@ -49,7 +49,7 @@ export default function App() {
       }
 
       const data = await response.json();
-      const token = data.token;
+      const token = data.access_token;
 
       // save token to local storage
       localStorage.setItem('authToken', token);
