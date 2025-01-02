@@ -55,12 +55,12 @@ class TodoWebUI:
         @self.app.post("/token")
         async def login(form_data: OAuth2PasswordRequestForm = Depends()):
             try:
-                print(form_data)
                 token = self.user_manager.login(form_data.username, form_data.password)
                 return {"token": token, "token_type": "bearer"}
-            except ValueError as e:
+            except ValueError:
                 raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e)
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid username or password",
                 )
 
         @self.app.post("/user", status_code=201)
