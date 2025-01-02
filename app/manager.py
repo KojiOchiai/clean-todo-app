@@ -54,12 +54,12 @@ class UserManager:
             payload = jwt.decode(token, self.secret_key, algorithms=["HS256"])
             user_id: int | None = payload.get("user_id")
             if user_id is None:
-                raise ValueError("Invalid token")
+                raise ValueError("Invalid token data")
             return user_id
         except jwt.ExpiredSignatureError:
             raise ValueError("Token expired")
         except jwt.JWTError:
-            raise ValueError("Invalid token")
+            raise ValueError("Invalid token, could not decode")
 
     def get_user_by_id(self, user_id: int) -> User:
         return self.storage.get_user_by_id(user_id)
