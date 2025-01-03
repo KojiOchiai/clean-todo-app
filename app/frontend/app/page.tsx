@@ -4,9 +4,8 @@ import { Login } from '@/components/Login'
 import { TodoItem } from '@/components/TodoItem'
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 import { LogOut } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 interface Todo {
   id: number;
@@ -17,14 +16,8 @@ interface Todo {
 
 export default function App() {
   const [todos, setTodos] = useState<Todo[]>([])
-  const [newTodo, setNewTodo] = useState('')
-  const [newDescription, setNewDescription] = useState('')
   const [token, setToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
-  const [showAddForm, setShowAddForm] = useState(false)
-  const [editingTodoId, setEditingTodoId] = useState<number | null>(null)
-  const formRef = useRef<HTMLDivElement | null>(null)
-  const titleInputRef = useRef<HTMLInputElement | null>(null);
   const apiUrl = process.env.NODE_ENV === 'production' 
     ? '' 
     : 'http://localhost:8000';
@@ -58,25 +51,6 @@ export default function App() {
       fetchTodos(storedToken);
     }
   }, [fetchTodos]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (formRef.current && !formRef.current.contains(event.target as Node)) {
-        setShowAddForm(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [formRef]);
-
-  useEffect(() => {
-    if (editingTodoId !== null) {
-      titleInputRef.current?.focus();
-    }
-  }, [editingTodoId]);
 
   const handleLogin = async (username: string, password: string) => {
     try {
@@ -118,17 +92,18 @@ export default function App() {
   }
 
   const addTodo = async () => {
+    // Create a new empty Todo item
     const newTodoItem = {
       id: Date.now(), // temporary id
-      title: newTodo,
-      description: newDescription,
+      title: '',
+      description: '',
       is_done: false
     };
 
+    // Add the new empty Todo to the list and set it to editing mode
     setTodos([newTodoItem, ...todos]);
-    setEditingTodoId(newTodoItem.id);
 
-    // send request to server to add new todo
+    // Send request to server to add new empty todo
     try {
       const response = await fetch(`${apiUrl}/todos`, {
         method: 'POST',
@@ -136,7 +111,7 @@ export default function App() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ title: newTodo, description: newDescription, is_done: false })
+        body: JSON.stringify({ title: '', description: '', is_done: false })
       });
 
       if (!response.ok) {
@@ -144,9 +119,9 @@ export default function App() {
       }
 
       const data = await response.json();
+      // Replace the temporary Todo with the one from the server
       setTodos([data.todo, ...todos.filter(todo => todo.id !== newTodoItem.id)]);
-      setNewTodo('');
-      setNewDescription('');
+      
     } catch (error) {
       alert(`Error adding todo: ${(error as Error).message}`);
     }
@@ -251,32 +226,12 @@ export default function App() {
             Logout
           </Button>
         </div>
-        {!showAddForm ? (
-          <Button
-            onClick={() => setShowAddForm(true)}
-            className="mb-4 w-full text-gray-600 bg-gray-200 hover:bg-gray-300 focus:ring-2 focus:ring-gray-400"
-          >
-            Add Todo
-          </Button>
-        ) : (
-          <div ref={formRef} className="flex flex-col mb-4">
-            <Input
-              type="text"
-              value={newTodo}
-              onChange={(e) => setNewTodo(e.target.value)}
-              placeholder="Enter a new task"
-              className="mb-2"
-            />
-            <Input
-              type="text"
-              value={newDescription}
-              onChange={(e) => setNewDescription(e.target.value)}
-              placeholder="Enter a description"
-              className="mb-2"
-            />
-            <Button onClick={addTodo} className="self-end">Add</Button>
-          </div>
-        )}
+        <Button
+          onClick={addTodo}
+          className="mb-4 w-full text-gray-600 bg-gray-200 hover:bg-gray-300 focus:ring-2 focus:ring-gray-400"
+        >
+          Add Todo
+        </Button>
         <ul className="space-y-2">
           {todos.map(todo => (
             <TodoItem
