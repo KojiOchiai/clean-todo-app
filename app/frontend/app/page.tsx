@@ -196,6 +196,7 @@ export default function App() {
       setTodos(todos.map(todo =>
         todo.id === id ? { ...todo, title, description } : todo
       ));
+      setNewTodoId(null);
     } catch (error) {
       alert(`Error updating todo: ${(error as Error).message}`);
     }
