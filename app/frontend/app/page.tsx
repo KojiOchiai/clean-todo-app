@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { LogOut } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 interface Todo {
   id: number;
@@ -23,14 +23,31 @@ export default function App() {
   const [loading, setLoading] = useState(true)
   const [showAddForm, setShowAddForm] = useState(false)
   const [editingTodoId, setEditingTodoId] = useState<number | null>(null)
-  const [editingTitle, setEditingTitle] = useState('')
-  const [editingDescription, setEditingDescription] = useState('')
   const formRef = useRef<HTMLDivElement | null>(null)
   const titleInputRef = useRef<HTMLInputElement | null>(null);
-  const descriptionInputRef = useRef<HTMLInputElement | null>(null);
   const apiUrl = process.env.NODE_ENV === 'production' 
     ? '' 
     : 'http://localhost:8000';
+
+  const fetchTodos = useCallback(async (authToken: string) => {
+    try {
+      const response = await fetch(`${apiUrl}/todos`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${authToken}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch todos');
+      }
+
+      const data = await response.json();
+      setTodos(data.reverse());
+    } catch (error) {
+      alert(`Error fetching todos: ${(error as Error).message}`);
+    }
+  }, [apiUrl]);
 
   useEffect(() => {
     const storedToken = localStorage.getItem('authToken');
@@ -40,7 +57,7 @@ export default function App() {
     if (storedToken) {
       fetchTodos(storedToken);
     }
-  }, []);
+  }, [fetchTodos]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -98,26 +115,6 @@ export default function App() {
     localStorage.removeItem('authToken');
     setToken(null);
     setTodos([])
-  }
-
-  const fetchTodos = async (authToken: string) => {
-    try {
-      const response = await fetch(`${apiUrl}/todos`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${authToken}`
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch todos');
-      }
-
-      const data = await response.json();
-      setTodos(data.reverse());
-    } catch (error) {
-      alert(`Error fetching todos: ${(error as Error).message}`);
-    }
   }
 
   const addTodo = async () => {
@@ -202,12 +199,6 @@ export default function App() {
     }
   }
 
-  const startEditing = (todo: Todo) => {
-    setEditingTodoId(todo.id);
-    setEditingTitle(todo.title);
-    setEditingDescription(todo.description);
-  };
-
   const saveEdit = async (id: number, title: string, description: string) => {
     try {
       const response = await fetch(`${apiUrl}/todos/${id}`, {
@@ -229,17 +220,6 @@ export default function App() {
     } catch (error) {
       alert(`Error updating todo: ${(error as Error).message}`);
     }
-  };
-
-  const handleBlur = (id: number) => {
-    setTimeout(() => {
-      if (
-        document.activeElement !== titleInputRef.current &&
-        document.activeElement !== descriptionInputRef.current
-      ) {
-        saveEdit(id, editingTitle, editingDescription);
-      }
-    }, 0);
   };
 
   if (loading) {
