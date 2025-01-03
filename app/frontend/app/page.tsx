@@ -25,13 +25,12 @@ export default function App() {
   const [editingTodoId, setEditingTodoId] = useState<number | null>(null)
   const [editingTitle, setEditingTitle] = useState('')
   const [editingDescription, setEditingDescription] = useState('')
-  const apiUrl = process.env.NODE_ENV === 'production' 
-    ? '' 
-    : 'http://localhost:8000';
-
   const formRef = useRef<HTMLDivElement | null>(null)
   const titleInputRef = useRef<HTMLInputElement | null>(null);
   const descriptionInputRef = useRef<HTMLInputElement | null>(null);
+  const apiUrl = process.env.NODE_ENV === 'production' 
+    ? '' 
+    : 'http://localhost:8000';
 
   useEffect(() => {
     const storedToken = localStorage.getItem('authToken');
