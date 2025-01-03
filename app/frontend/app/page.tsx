@@ -215,7 +215,12 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-stretch justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div
+      className="
+        min-h-screen bg-gray-100 flex items-stretch 
+        justify-center py-12 px-4 sm:px-6 lg:px-8
+      "
+    >
       <Card className="max-w-md w-full p-6">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">Todo App</h1>
@@ -231,7 +236,10 @@ export default function App() {
         </div>
         <Button
           onClick={addTodo}
-          className="mb-4 w-full text-gray-600 bg-gray-200 hover:bg-gray-300 focus:ring-2 focus:ring-gray-400"
+          className="
+            mb-4 w-full text-gray-600 bg-gray-200 hover:bg-gray-300 
+            focus:ring-2 focus:ring-gray-400
+          "
         >
           Add Todo
         </Button>
