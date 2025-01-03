@@ -1,7 +1,6 @@
-from fastapi import Depends, FastAPI, HTTPException, Request, status
-from fastapi.responses import HTMLResponse
+from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from app.manager import TaskManager, UserManager
@@ -33,7 +32,6 @@ class TodoWebUI:
         self.user_manager = user_manager
         self.task_manager = task_manager
         self.app = FastAPI()
-        self.templates = Jinja2Templates(directory="app/ui/templates")
         self._setup_routes()
 
     def _get_current_user(self, token: str = Depends(oauth2_scheme)) -> User:
@@ -43,14 +41,11 @@ class TodoWebUI:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
 
     def _setup_routes(self):
-        @self.app.get("/", response_class=HTMLResponse)
-        async def read_root(
-            request: Request, user: User = Depends(self._get_current_user)
-        ):
-            todos = self.task_manager.get_tasks_by_user_id(user.id)
-            return self.templates.TemplateResponse(
-                "index.html", {"request": request, "todos": todos}
-            )
+        self.app.mount(
+            "/frontend",
+            StaticFiles(directory="app/frontend/out", html=True),
+            name="static",
+        )
 
         @self.app.post("/token")
         async def login(form_data: OAuth2PasswordRequestForm = Depends()):
