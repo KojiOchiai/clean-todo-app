@@ -176,6 +176,9 @@ export default function App() {
   }
 
   const saveEdit = async (id: number, title: string, description: string) => {
+    setTodos(todos.map(todo =>
+      todo.id === id ? { ...todo, title: title, description: description } : todo
+    ));
     try {
       const response = await fetch(`${apiUrl}/todos/${id}`, {
         method: 'PUT',
