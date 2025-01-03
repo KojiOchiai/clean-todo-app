@@ -241,20 +241,20 @@ export default function App() {
         <ul className="space-y-2">
           {todos.map(todo => (
             <li key={todo.id} className="flex items-center justify-between p-2">
-              <div className="flex items-center">
-                <Checkbox
-                  id={`todo-${todo.id}`}
-                  checked={todo.is_done}
-                  onCheckedChange={() => toggleTodo(todo.id)}
-                  className="mr-2"
-                />
+              <Checkbox
+                id={`todo-${todo.id}`}
+                checked={todo.is_done}
+                onCheckedChange={() => toggleTodo(todo.id)}
+                className="mr-2"
+              />
+              <div className="flex flex-col flex-grow">
                 <label
                   htmlFor={`todo-${todo.id}`}
                   className={`${todo.is_done ? 'line-through text-gray-500' : ''}`}
                 >
                   {todo.title}
                 </label>
-                <p className="ml-4 text-sm text-gray-600 truncate max-w-xs">{todo.description}</p>
+                <p className="text-sm text-gray-600 truncate">{todo.description}</p>
               </div>
               <Button
                 variant="ghost"
