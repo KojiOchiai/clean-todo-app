@@ -107,14 +107,14 @@ class TodoWebUI:
             todos = self.task_manager.get_tasks_by_user_id(user.id)
             return [todo.__dict__ for todo in todos]
 
-        @self.app.post("/todos", status_code=201)
+        @self.app.post("/todo", status_code=201)
         def add_todo(item: TodoModel, user: User = Depends(self._get_current_user)):
             new_todo = self.task_manager.create_task(
                 user.id, item.title, item.description, item.is_done
             )
             return {"message": "Todo added successfully", "todo": new_todo.__dict__}
 
-        @self.app.put("/todos/{todo_id}")
+        @self.app.put("/todo/{todo_id}")
         def update_todo(
             todo_id: int,
             item: TodoModel,
@@ -133,7 +133,7 @@ class TodoWebUI:
             except Exception as e:
                 raise HTTPException(status_code=404, detail=str(e))
 
-        @self.app.delete("/todos/{todo_id}", status_code=204)
+        @self.app.delete("/todo/{todo_id}", status_code=204)
         def delete_todo(todo_id: int, user: User = Depends(self._get_current_user)):
             try:
                 self.task_manager.delete_task(user.id, todo_id)

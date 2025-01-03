@@ -107,7 +107,7 @@ export default function App() {
 
     // Send request to server to add new empty todo
     try {
-      const response = await fetch(`${apiUrl}/todos`, {
+      const response = await fetch(`${apiUrl}/todo`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -135,7 +135,7 @@ export default function App() {
     if (!todo) return;
 
     try {
-      const response = await fetch(`${apiUrl}/todos/${id}`, {
+      const response = await fetch(`${apiUrl}/todo/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -158,7 +158,7 @@ export default function App() {
 
   const deleteTodo = async (id: number) => {
     try {
-      const response = await fetch(`${apiUrl}/todos/${id}`, {
+      const response = await fetch(`${apiUrl}/todo/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -180,7 +180,7 @@ export default function App() {
       todo.id === id ? { ...todo, title: title, description: description } : todo
     ));
     try {
-      const response = await fetch(`${apiUrl}/todos/${id}`, {
+      const response = await fetch(`${apiUrl}/todo/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
