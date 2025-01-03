@@ -75,10 +75,10 @@ export function TodoItem({ todo, toggleTodo, deleteTodo, saveEdit }: TodoItemPro
           <>
             <label
               htmlFor={`todo-${todo.id}`}
-              className={`${todo.is_done ? 'line-through text-gray-500' : ''}`}
+              className={`${todo.is_done ? 'line-through text-gray-500' : ''} ${!todo.title ? 'text-gray-400' : ''}`}
               onClick={() => setEditing(true)}
             >
-              {todo.title}
+              {todo.title || "Click to add title"}
             </label>
             <p
               className={`text-sm text-gray-600 truncate ${todo.is_done ? 'line-through' : ''}`}

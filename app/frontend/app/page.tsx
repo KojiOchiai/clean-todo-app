@@ -121,30 +121,41 @@ export default function App() {
   }
 
   const addTodo = async () => {
-    if (newTodo.trim() !== '') {
-      try {
-        const response = await fetch(`${apiUrl}/todos`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ title: newTodo, description: newDescription, is_done: false })
-        });
+    const newTodoItem = {
+      id: Date.now(), // temporary id
+      title: newTodo,
+      description: newDescription,
+      is_done: false
+    };
 
-        if (!response.ok) {
-          throw new Error('Failed to add todo');
-        }
+    setTodos([newTodoItem, ...todos]);
+    setEditingTodoId(newTodoItem.id);
+    setEditingTitle(newTodo);
+    setEditingDescription(newDescription);
 
-        const data = await response.json();
-        setTodos([data.todo, ...todos]);
-        setNewTodo('');
-        setNewDescription('');
-      } catch (error) {
-        alert(`Error adding todo: ${(error as Error).message}`);
+    // send request to server to add new todo
+    try {
+      const response = await fetch(`${apiUrl}/todos`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ title: newTodo, description: newDescription, is_done: false })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add todo');
       }
+
+      const data = await response.json();
+      setTodos([data.todo, ...todos.filter(todo => todo.id !== newTodoItem.id)]);
+      setNewTodo('');
+      setNewDescription('');
+    } catch (error) {
+      alert(`Error adding todo: ${(error as Error).message}`);
     }
-  }
+  };
 
   const toggleTodo = async (id: number) => {
     const todo = todos.find(todo => todo.id === id);
@@ -291,6 +302,7 @@ export default function App() {
         <ul className="space-y-2">
           {todos.map(todo => (
             <TodoItem
+              key={todo.id}
               todo={todo}
               toggleTodo={toggleTodo}
               deleteTodo={deleteTodo}
