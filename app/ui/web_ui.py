@@ -42,7 +42,7 @@ class TodoWebUI:
 
     def _setup_routes(self):
         self.app.mount(
-            "/frontend",
+            "/static",
             StaticFiles(directory="app/frontend/out", html=True),
             name="static",
         )
