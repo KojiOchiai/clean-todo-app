@@ -58,7 +58,7 @@ class TodoWebUI:
                 )
 
         @self.app.post("/user", status_code=201)
-        async def create_user(user: UserModel):
+        async def add_user(user: UserModel):
             try:
                 new_user = self.user_manager.create_user(
                     user.username, user.email, user.password
