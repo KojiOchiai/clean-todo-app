@@ -18,8 +18,13 @@ interface TodoItemProps {
   saveEdit: (id: number, title: string, description: string) => void;
   editing?: boolean;
 }
-
-export function TodoItem({ todo, toggleTodo, deleteTodo, saveEdit, editing = false }: TodoItemProps) {
+export function TodoItem({
+  todo,
+  toggleTodo,
+  deleteTodo,
+  saveEdit,
+  editing = false
+}: TodoItemProps) {
   const [isEditing, setIsEditing] = useState(editing);
   const [editingTitle, setEditingTitle] = useState(todo.title);
   const [editingDescription, setEditingDescription] = useState(todo.description);
