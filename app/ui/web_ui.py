@@ -10,19 +10,13 @@ from app.models import User
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-class TodoItem(BaseModel):
+class TodoModel(BaseModel):
     title: str
     description: str
     is_done: bool = False
 
 
-class TodoUpdateItem(BaseModel):
-    title: str = None
-    description: str = None
-    is_done: bool = None
-
-
-class UserCreate(BaseModel):
+class UserModel(BaseModel):
     username: str
     email: str
     password: str
@@ -64,7 +58,7 @@ class TodoWebUI:
                 )
 
         @self.app.post("/user", status_code=201)
-        async def create_user(user: UserCreate):
+        async def create_user(user: UserModel):
             try:
                 new_user = self.user_manager.create_user(
                     user.username, user.email, user.password
@@ -87,7 +81,7 @@ class TodoWebUI:
             return [todo.__dict__ for todo in todos]
 
         @self.app.post("/todos", status_code=201)
-        def add_todo(item: TodoItem, user: User = Depends(self._get_current_user)):
+        def add_todo(item: TodoModel, user: User = Depends(self._get_current_user)):
             new_todo = self.task_manager.create_task(
                 user.id, item.title, item.description, item.is_done
             )
@@ -96,7 +90,7 @@ class TodoWebUI:
         @self.app.put("/todos/{todo_id}")
         def update_todo(
             todo_id: int,
-            item: TodoUpdateItem,
+            item: TodoModel,
             user: User = Depends(self._get_current_user),
         ):
             try:
