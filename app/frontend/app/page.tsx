@@ -127,8 +127,6 @@ export default function App() {
 
     setTodos([newTodoItem, ...todos]);
     setEditingTodoId(newTodoItem.id);
-    setEditingTitle(newTodo);
-    setEditingDescription(newDescription);
 
     // send request to server to add new todo
     try {
