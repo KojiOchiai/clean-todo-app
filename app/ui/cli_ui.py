@@ -46,6 +46,14 @@ class TodoCLIUI(TodoInterface):
             )
             print("toggle <id> - Toggle the done status of a Todo")
             print("delete <id> - Delete a Todo")
+            print("user_info - Display the current logged-in user information")
+            print(
+                (
+                    "update_user --username <new_username> [--email <new_email>] "
+                    "- Update user information"
+                )
+            )
+            print("delete_user - Delete the current user account")
             print("help - Show this help message")
             print("exit - Exit the application")
 
@@ -163,6 +171,58 @@ class TodoCLIUI(TodoInterface):
                     print(f"Todo with ID {task_id} deleted.")
                 else:
                     print(f"Todo with ID {task_id} not found.")
+
+            elif command == "user_info":
+                try:
+                    user = self.get_user()
+                    print(
+                        (
+                            f"User Information:\nUsername: {user.username}\nEmail: "
+                            f"{user.email}"
+                        )
+                    )
+                except ValueError as e:
+                    print(f"Error: {e}")
+
+            elif command == "update_user":
+                new_username = None
+                new_email = None
+                for i in range(0, len(args), 2):
+                    if args[i] == "--username":
+                        new_username = args[i + 1]
+                    elif args[i] == "--email":
+                        new_email = args[i + 1]
+                if new_username is None and new_email is None:
+                    print(
+                        (
+                            "Error: 'update_user' command requires at least a new "
+                            "username or email."
+                        )
+                    )
+                    continue
+                try:
+                    updated_user = self.user_manager.update_user(
+                        self.get_user().id, new_username, new_email
+                    )
+                    print(f"User updated successfully: {updated_user.username}")
+                except ValueError as e:
+                    print(f"Error: {e}")
+
+            elif command == "delete_user":
+                confirmation = (
+                    input("Are you sure you want to delete your account? (yes/no): ")
+                    .strip()
+                    .lower()
+                )
+                if confirmation == "yes":
+                    try:
+                        self.user_manager.delete_user(self.get_user().id)
+                        print("User account deleted successfully.")
+                        break
+                    except ValueError as e:
+                        print(f"Error: {e}")
+                else:
+                    print("User account deletion cancelled.")
 
             elif command == "help":
                 print_help()
