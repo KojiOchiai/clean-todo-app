@@ -22,11 +22,16 @@ export default function App() {
   const [token, setToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [showAddForm, setShowAddForm] = useState(false)
+  const [editingTodoId, setEditingTodoId] = useState<number | null>(null)
+  const [editingTitle, setEditingTitle] = useState('')
+  const [editingDescription, setEditingDescription] = useState('')
   const apiUrl = process.env.NODE_ENV === 'production' 
     ? '' 
     : 'http://localhost:8000';
 
   const formRef = useRef<HTMLDivElement | null>(null)
+  const titleInputRef = useRef<HTMLInputElement | null>(null);
+  const descriptionInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const storedToken = localStorage.getItem('authToken');
@@ -50,6 +55,12 @@ export default function App() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [formRef]);
+
+  useEffect(() => {
+    if (editingTodoId !== null) {
+      titleInputRef.current?.focus();
+    }
+  }, [editingTodoId]);
 
   const handleLogin = async (username: string, password: string) => {
     try {
@@ -181,6 +192,47 @@ export default function App() {
     }
   }
 
+  const startEditing = (todo: Todo) => {
+    setEditingTodoId(todo.id);
+    setEditingTitle(todo.title);
+    setEditingDescription(todo.description);
+  };
+
+  const saveEdit = async (id: number) => {
+    try {
+      const response = await fetch(`${apiUrl}/todos/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ title: editingTitle, description: editingDescription })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update todo');
+      }
+
+      setTodos(todos.map(todo =>
+        todo.id === id ? { ...todo, title: editingTitle, description: editingDescription } : todo
+      ));
+      setEditingTodoId(null);
+    } catch (error) {
+      alert(`Error updating todo: ${(error as Error).message}`);
+    }
+  };
+
+  const handleBlur = (id: number) => {
+    setTimeout(() => {
+      if (
+        document.activeElement !== titleInputRef.current &&
+        document.activeElement !== descriptionInputRef.current
+      ) {
+        saveEdit(id);
+      }
+    }, 0);
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -248,15 +300,42 @@ export default function App() {
                 className="mr-2"
               />
               <div className="flex flex-col flex-grow">
-                <label
-                  htmlFor={`todo-${todo.id}`}
-                  className={`${todo.is_done ? 'line-through text-gray-500' : ''}`}
-                >
-                  {todo.title}
-                </label>
-                <p className={`text-sm text-gray-600 truncate ${todo.is_done ? 'line-through' : ''}`}>
-                  {todo.description}
-                </p>
+                {editingTodoId === todo.id ? (
+                  <>
+                    <Input
+                      type="text"
+                      value={editingTitle}
+                      onChange={(e) => setEditingTitle(e.target.value)}
+                      onBlur={() => handleBlur(todo.id)}
+                      className="mb-1"
+                      ref={titleInputRef}
+                    />
+                    <Input
+                      type="text"
+                      value={editingDescription}
+                      onChange={(e) => setEditingDescription(e.target.value)}
+                      onBlur={() => handleBlur(todo.id)}
+                      className="mb-1"
+                      ref={descriptionInputRef}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <label
+                      htmlFor={`todo-${todo.id}`}
+                      className={`${todo.is_done ? 'line-through text-gray-500' : ''}`}
+                      onClick={() => startEditing(todo)}
+                    >
+                      {todo.title}
+                    </label>
+                    <p
+                      className={`text-sm text-gray-600 truncate ${todo.is_done ? 'line-through' : ''}`}
+                      onClick={() => startEditing(todo)}
+                    >
+                      {todo.description}
+                    </p>
+                  </>
+                )}
               </div>
               <Button
                 variant="ghost"
