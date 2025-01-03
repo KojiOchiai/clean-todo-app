@@ -134,6 +134,10 @@ export default function App() {
     const todo = todos.find(todo => todo.id === id);
     if (!todo) return;
 
+    setTodos(todos.map(todo =>
+      todo.id === id ? { ...todo, is_done: !todo.is_done } : todo
+    ));
+
     try {
       const response = await fetch(`${apiUrl}/todo/${id}`, {
         method: 'PUT',
