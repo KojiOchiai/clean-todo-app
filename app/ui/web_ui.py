@@ -16,6 +16,12 @@ class TodoModel(BaseModel):
     is_done: bool = False
 
 
+class TodoUpdateModel(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    is_done: bool | None = None
+
+
 class UserModel(BaseModel):
     username: str
     email: str
@@ -117,7 +123,7 @@ class TodoWebUI:
         @self.app.put("/todo/{todo_id}")
         def update_todo(
             todo_id: int,
-            item: TodoModel,
+            item: TodoUpdateModel,
             user: User = Depends(self._get_current_user),
         ):
             try:
@@ -125,7 +131,9 @@ class TodoWebUI:
                     user.id, todo_id, item.title, item.description
                 )
                 if item.is_done is not None:
-                    self.task_manager.set_task_status(user.id, todo_id, item.is_done)
+                    updated_task = self.task_manager.set_task_status(
+                        user.id, todo_id, item.is_done
+                    )
                 return {
                     "message": "Todo updated successfully",
                     "todo": updated_task.__dict__,
