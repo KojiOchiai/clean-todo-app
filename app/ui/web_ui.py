@@ -75,6 +75,33 @@ class TodoWebUI:
                     status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
                 )
 
+        @self.app.put("/user", status_code=200)
+        async def update_user(
+            user: UserModel,
+            current_user: User = Depends(self._get_current_user),
+        ):
+            try:
+                updated_user = self.user_manager.update_user(
+                    current_user.id, user.username, user.email, user.password
+                )
+                return {
+                    "message": "User updated successfully",
+                    "user": updated_user.__dict__,
+                }
+            except ValueError as e:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+                )
+
+        @self.app.delete("/user", status_code=204)
+        async def delete_user(current_user: User = Depends(self._get_current_user)):
+            try:
+                self.user_manager.delete_user(current_user.id)
+            except ValueError as e:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+                )
+
         @self.app.get("/todos")
         def list_todos(user: User = Depends(self._get_current_user)):
             todos = self.task_manager.get_tasks_by_user_id(user.id)
