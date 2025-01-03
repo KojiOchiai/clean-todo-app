@@ -16,20 +16,21 @@ interface TodoItemProps {
   toggleTodo: (id: number) => void;
   deleteTodo: (id: number) => void;
   saveEdit: (id: number, title: string, description: string) => void;
+  editing?: boolean;
 }
 
-export function TodoItem({ todo, toggleTodo, deleteTodo, saveEdit }: TodoItemProps) {
-  const [editing, setEditing] = useState(false);
+export function TodoItem({ todo, toggleTodo, deleteTodo, saveEdit, editing = false }: TodoItemProps) {
+  const [isEditing, setIsEditing] = useState(editing);
   const [editingTitle, setEditingTitle] = useState(todo.title);
   const [editingDescription, setEditingDescription] = useState(todo.description);
   const titleInputRef = useRef<HTMLInputElement | null>(null);
   const descriptionInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    if (editing) {
+    if (isEditing) {
       titleInputRef.current?.focus();
     }
-  }, [editing]);
+  }, [isEditing]);
 
   const handleBlur = () => {
     setTimeout(() => {
@@ -38,7 +39,7 @@ export function TodoItem({ todo, toggleTodo, deleteTodo, saveEdit }: TodoItemPro
         document.activeElement !== descriptionInputRef.current
       ) {
         saveEdit(todo.id, editingTitle, editingDescription);
-        setEditing(false);
+        setIsEditing(false);
       }
     }, 0);
   };
@@ -52,7 +53,7 @@ export function TodoItem({ todo, toggleTodo, deleteTodo, saveEdit }: TodoItemPro
         className="mr-2"
       />
       <div className="flex flex-col flex-grow">
-        {editing ? (
+        {isEditing ? (
           <>
             <Input
               type="text"
@@ -75,14 +76,17 @@ export function TodoItem({ todo, toggleTodo, deleteTodo, saveEdit }: TodoItemPro
           <>
             <label
               htmlFor={`todo-${todo.id}`}
-              className={`${todo.is_done ? 'line-through text-gray-500' : ''} ${!todo.title ? 'text-gray-400' : ''}`}
-              onClick={() => setEditing(true)}
+              className={`${todo.is_done ? 'line-through text-gray-500' : ''} 
+                          ${!todo.title ? 'text-gray-400' : ''}`}
+              onClick={() => setIsEditing(true)}
             >
               {todo.title || "Click to add title"}
             </label>
             <p
-              className={`text-sm text-gray-600 truncate ${todo.is_done ? 'line-through' : ''}`}
-              onClick={() => setEditing(true)}
+              className={`text-sm text-gray-600 truncate 
+                          ${todo.is_done ? 'line-through' : ''} 
+                          ${!todo.description ? 'text-gray-400' : ''}`}
+              onClick={() => setIsEditing(true)}
             >
               {todo.description}
             </p>

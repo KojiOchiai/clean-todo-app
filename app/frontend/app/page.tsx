@@ -18,6 +18,7 @@ export default function App() {
   const [todos, setTodos] = useState<Todo[]>([])
   const [token, setToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [newTodoId, setNewTodoId] = useState<number | null>(null)
   const apiUrl = process.env.NODE_ENV === 'production' 
     ? '' 
     : 'http://localhost:8000';
@@ -102,6 +103,7 @@ export default function App() {
 
     // Add the new empty Todo to the list and set it to editing mode
     setTodos([newTodoItem, ...todos]);
+    setNewTodoId(newTodoItem.id);
 
     // Send request to server to add new empty todo
     try {
@@ -121,6 +123,7 @@ export default function App() {
       const data = await response.json();
       // Replace the temporary Todo with the one from the server
       setTodos([data.todo, ...todos.filter(todo => todo.id !== newTodoItem.id)]);
+      setNewTodoId(data.todo.id);
       
     } catch (error) {
       alert(`Error adding todo: ${(error as Error).message}`);
@@ -240,6 +243,7 @@ export default function App() {
               toggleTodo={toggleTodo}
               deleteTodo={deleteTodo}
               saveEdit={saveEdit}
+              editing={todo.id === newTodoId}
             />
           ))}
         </ul>
