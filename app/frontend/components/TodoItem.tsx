@@ -18,6 +18,7 @@ interface TodoItemProps {
   saveEdit: (id: number, title: string, description: string) => void;
   editing?: boolean;
 }
+
 export function TodoItem({
   todo,
   toggleTodo,
