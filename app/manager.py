@@ -80,7 +80,7 @@ class UserManager:
         email: str = None,
         password: str = None,
     ) -> User:
-        user = self.get_user(user_id)
+        user = self.get_user_by_id(user_id)
         if user:
             if username:
                 user.username = username
