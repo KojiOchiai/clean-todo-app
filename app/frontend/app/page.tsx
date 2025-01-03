@@ -1,11 +1,11 @@
 "use client"
 
 import { Login } from '@/components/Login'
+import { TodoItem } from '@/components/TodoItem'
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
-import { LogOut, Trash2 } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 interface Todo {
@@ -197,7 +197,7 @@ export default function App() {
     setEditingDescription(todo.description);
   };
 
-  const saveEdit = async (id: number) => {
+  const saveEdit = async (id: number, title: string, description: string) => {
     try {
       const response = await fetch(`${apiUrl}/todos/${id}`, {
         method: 'PUT',
@@ -205,7 +205,7 @@ export default function App() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ title: editingTitle, description: editingDescription })
+        body: JSON.stringify({ title, description })
       });
 
       if (!response.ok) {
@@ -213,9 +213,8 @@ export default function App() {
       }
 
       setTodos(todos.map(todo =>
-        todo.id === id ? { ...todo, title: editingTitle, description: editingDescription } : todo
+        todo.id === id ? { ...todo, title, description } : todo
       ));
-      setEditingTodoId(null);
     } catch (error) {
       alert(`Error updating todo: ${(error as Error).message}`);
     }
@@ -227,7 +226,7 @@ export default function App() {
         document.activeElement !== titleInputRef.current &&
         document.activeElement !== descriptionInputRef.current
       ) {
-        saveEdit(id);
+        saveEdit(id, editingTitle, editingDescription);
       }
     }, 0);
   };
@@ -291,60 +290,12 @@ export default function App() {
         )}
         <ul className="space-y-2">
           {todos.map(todo => (
-            <li key={todo.id} className="flex items-center justify-between p-2">
-              <Checkbox
-                id={`todo-${todo.id}`}
-                checked={todo.is_done}
-                onCheckedChange={() => toggleTodo(todo.id)}
-                className="mr-2"
-              />
-              <div className="flex flex-col flex-grow">
-                {editingTodoId === todo.id ? (
-                  <>
-                    <Input
-                      type="text"
-                      value={editingTitle}
-                      onChange={(e) => setEditingTitle(e.target.value)}
-                      onBlur={() => handleBlur(todo.id)}
-                      className="mb-1"
-                      ref={titleInputRef}
-                    />
-                    <Input
-                      type="text"
-                      value={editingDescription}
-                      onChange={(e) => setEditingDescription(e.target.value)}
-                      onBlur={() => handleBlur(todo.id)}
-                      className="mb-1"
-                      ref={descriptionInputRef}
-                    />
-                  </>
-                ) : (
-                  <>
-                    <label
-                      htmlFor={`todo-${todo.id}`}
-                      className={`${todo.is_done ? 'line-through text-gray-500' : ''}`}
-                      onClick={() => startEditing(todo)}
-                    >
-                      {todo.title}
-                    </label>
-                    <p
-                      className={`text-sm text-gray-600 truncate ${todo.is_done ? 'line-through' : ''}`}
-                      onClick={() => startEditing(todo)}
-                    >
-                      {todo.description}
-                    </p>
-                  </>
-                )}
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => deleteTodo(todo.id)}
-                aria-label="Remove Tasks"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </li>
+            <TodoItem
+              todo={todo}
+              toggleTodo={toggleTodo}
+              deleteTodo={deleteTodo}
+              saveEdit={saveEdit}
+            />
           ))}
         </ul>
       </Card>
