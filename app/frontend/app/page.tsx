@@ -254,7 +254,9 @@ export default function App() {
                 >
                   {todo.title}
                 </label>
-                <p className="text-sm text-gray-600 truncate">{todo.description}</p>
+                <p className={`text-sm text-gray-600 truncate ${todo.is_done ? 'line-through' : ''}`}>
+                  {todo.description}
+                </p>
               </div>
               <Button
                 variant="ghost"
