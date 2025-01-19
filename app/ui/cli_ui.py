@@ -165,7 +165,7 @@ class TodoCLIUI(TodoInterface):
                     print("Error: 'delete' command requires an ID.")
                     continue
                 task_id = int(args[0])
-                tasks = self.task_manager.get_all_tasks()
+                tasks = self.task_manager.get_tasks_by_user_id(self.get_user().id)
                 if any(task.id == task_id for task in tasks):
                     self.task_manager.delete_task(self.get_user().id, task_id)
                     print(f"Todo with ID {task_id} deleted.")
