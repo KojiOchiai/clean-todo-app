@@ -5,8 +5,3 @@ todo app to learn clean architecture
 ```
 uv run python main.py
 ```
-
-## test
-```
-PYTHONPATH=. uv run pytest tests
-```
