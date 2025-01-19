@@ -2,10 +2,9 @@ import shlex
 
 from app.manager import TaskManager, UserManager
 from app.models import Todo, User
-from app.ui.base import TodoInterface
 
 
-class TodoCLIUI(TodoInterface):
+class TodoCLIUI:
     def __init__(self, user_manager: UserManager, task_manager: TaskManager):
         self.user_manager = user_manager
         self.task_manager = task_manager
