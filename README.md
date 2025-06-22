@@ -18,6 +18,7 @@ uv sync
 ```bash
 cd app/frontend
 npm install
+npm run build
 cd ../..
 ```
 
